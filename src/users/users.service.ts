@@ -38,6 +38,55 @@ export class UsersService {
     return this.userModel.findByEmail(email);
   }
 
+  /** Updates user password
+   * @returns Company account Document
+   */
+  public resetPassword = async (data: any) => {
+    const foundAccount = await this.userModel.findById(data.userId);
+
+    if (!foundAccount)
+      throw new NotFoundException(
+        'Sorry, we could not find this user in our database',
+      );
+
+    foundAccount.password = data.new_password;
+    await foundAccount.save();
+
+    return foundAccount;
+  };
+
+  /** Verifies code for request to reset forgotten password
+   * @returns access token
+   */
+  public async verifyPasswordResetCode(data: any) {
+    const foundUser = await this.findByEmail(data.email);
+
+    if (data.password_reset_code.toString() !== data.code.toString())
+      throw new BadRequestException(
+        'Oops! That code was not a match, try again.',
+      );
+
+    if (Date.now() > data.expiresAt)
+      throw new BadRequestException('Sorry, that code expired. Try again.');
+
+    return foundUser.createAccessToken();
+  }
+
+  public async authenticateEmail(data: any) {
+    const user = await this.findByEmail(data.email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid verification data');
+    }
+
+    if (data.code.toString() !== data?.verificationCode.toString()) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    // Mark email as verified (assuming verified_email field exists)
+    user.verified_email = true;
+    return user.save();
+  }
+
   public async createUser(
     createUserDto: CreateUserDto,
   ): Promise<UserAuthRes & { token: string }> {

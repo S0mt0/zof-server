@@ -15,10 +15,15 @@ import { MailService } from 'src/mailer/mailer.service';
 import {
   emailVerificationResendTemplate,
   emailVerificationTemplate,
+  newPasswordSuccessTemplate,
   obscureEmail,
   resetPasswordTemplate,
 } from 'src/lib';
-import { ForgotPasswordUserDto } from './dto/forgot-pasword-user.dto';
+import {
+  ForgotPasswordUserDto,
+  NewPasswordDto,
+  ResetPasswordUserDTO,
+} from './dto';
 
 @Injectable()
 export class AuthService {
@@ -86,26 +91,11 @@ export class AuthService {
     }
   }
 
-  public async authenticateEmail(data: any) {
-    const user = await this.usersService.findByEmail(data.email);
-    if (!user) {
-      throw new UnauthorizedException('Invalid verification data');
-    }
-
-    if (data.code.toString() !== data?.verificationCode.toString()) {
-      throw new BadRequestException('Invalid verification code');
-    }
-
-    // Mark email as verified (assuming verified_email field exists)
-    user.verified_email = true;
-    return user.save();
-  }
-
   public async verifyEmail(
     verificationCode: string,
     decoded: any,
   ): Promise<{ accessToken: string; user: UserDocument }> {
-    const user = await this.authenticateEmail({
+    const user = await this.usersService.authenticateEmail({
       ...decoded,
       verificationCode,
     });
@@ -210,6 +200,136 @@ export class AuthService {
           token: this.token,
           message: `A code has been sent to ${obscureEmail(this.session.email)}`,
         };
+      default:
+        throw new BadRequestException('Provided account type is not supported');
+        break;
+    }
+  };
+
+  public verifyPasswordResetCode = async (
+    resetPasswordUserDTO: ResetPasswordUserDTO,
+    data: any,
+  ) => {
+    const payload = resetPasswordUserDTO;
+    switch (data.account_type) {
+      case accounts.User:
+      case accounts.ADMIN:
+        const u_token = await this.usersService.verifyPasswordResetCode({
+          ...data,
+          ...payload,
+        });
+
+        this.token = u_token;
+        return { accessToken: this.token };
+
+      default:
+        throw new BadRequestException('Provided account type is not supported');
+    }
+  };
+
+  /**
+   * Handles resetting forgotten password
+   * @route {PUT} /api/v1/auth/reset-password
+   * @access public
+   */
+  public resetPassword = async (newPasswordDto: NewPasswordDto, data: any) => {
+    const payload = newPasswordDto;
+    switch (data.account_type) {
+      case accounts.User:
+      case accounts.ADMIN:
+        const u_doc = await this.usersService.resetPassword({
+          ...data,
+          ...payload,
+        });
+
+        this.session = u_doc;
+
+        const mailOptions = newPasswordSuccessTemplate(this.session.fullName);
+
+        await this.mailerService.viaNodemailer({
+          ...mailOptions,
+          to: this.session.email,
+        });
+
+        return { accessToken: this.token, user: this.session };
+
+      default:
+        throw new BadRequestException('Provided account type is not supported');
+        break;
+    }
+  };
+
+  /**
+   * Handles request to resend code used to initiate resetting forgotten password
+   * @route {GET} /api/v1/auth/password/resend-code
+   * @access public
+   */
+  public resendPasswordResetCode = async (data: any) => {
+    switch (data.account_type) {
+      case accounts.User:
+      case accounts.ADMIN:
+        const u_doc = await this.usersService.findByEmail(data.email);
+
+        const u_reset_data = u_doc.createResetPasswordToken();
+
+        this.session = u_doc;
+        this.code = u_reset_data.code;
+        this.token = u_reset_data.token;
+
+        const mailOptions = resetPasswordTemplate(
+          this.session.fullName,
+          this.code,
+        );
+
+        await this.mailerService.viaNodemailer({
+          ...mailOptions,
+          to: this.session.email,
+        });
+        return {
+          success: true,
+          message: `A code has been sent to ${obscureEmail(this.session.email)}`,
+          accessToken: this.token,
+        };
+
+      default:
+        throw new BadRequestException('Provided account type is not supported');
+        break;
+    }
+  };
+
+  /**
+   * Handles request to resend email verification code
+   * @route {GET} /api/v1/auth/email/resend-code
+   * @access public
+   */
+  public resendEmailVerificationCode = async (data: any) => {
+    switch (data.account_type) {
+      case accounts.User:
+      case accounts.ADMIN:
+        const u_doc = await this.usersService.findByEmail(data.email);
+
+        const u_reset_data = u_doc.createEmailVerificationToken();
+
+        this.session = u_doc;
+        this.code = u_reset_data.code;
+        this.token = u_reset_data.token;
+
+        const mailOptions = emailVerificationResendTemplate(
+          this.session.fullName,
+          this.code,
+        );
+
+        await this.mailerService.viaNodemailer({
+          ...mailOptions,
+          to: this.session.email,
+        });
+
+        return {
+          success: true,
+          message: `A code has been sent to ${obscureEmail(this.session.email)}`,
+          accessToken: this.token,
+        };
+
       default:
         throw new BadRequestException('Provided account type is not supported');
         break;
