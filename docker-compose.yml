@@ -1,0 +1,69 @@
+services:
+  dev-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: sewkito
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: gatherpay
+    ports:
+      - '5434:5432'
+    networks:
+      - gatherpay
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sewkito -d gatherpay']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    networks:
+      - gatherpay
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      dev-db:
+        condition: service_healthy
+
+  test-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: sewkito
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: gatherpay
+    ports:
+      - '5435:5432'
+    networks:
+      - gatherpay
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    networks:
+      - gatherpay
+    volumes:
+      - redis_dev_data:/data
+
+  test-redis:
+    image: redis:7-alpine
+    ports:
+      - '6380:6379'
+    networks:
+      - gatherpay
+
+networks:
+  gatherpay:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  pgadmin_data:

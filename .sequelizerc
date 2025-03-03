@@ -1,0 +1,8 @@
+const path = require('path');
+
+module.exports = {
+  config: path.resolve('src', 'lib', 'database', 'config.js'), // Path to Sequelize config file
+  'migrations-path': path.resolve('src', 'lib', 'database', 'migrations'), // Path to migrations
+  'seeders-path': path.resolve('src', 'lib', 'database', 'seeders'), // Path to seeders
+  'models-path': path.resolve('src', 'lib', 'database', 'model'), // After the first initialization of the sequelize cli, delete this models folder since all table/model creation will be done programmatically and not through the cli, unless for testing purposes
+};

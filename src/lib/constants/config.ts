@@ -1,0 +1,21 @@
+export const NODE_ENV = 'NODE_ENV';
+
+export const PORT = 'PORT';
+
+export const DATABASE_URL = 'DATABASE_URL';
+
+export const VERSION = 'VERSION';
+
+export const REDIS_CLOUD_URL = 'REDIS_CLOUD_URL';
+
+export const BASE_URL = 'BASE_URL';
+
+export const ALLOWED_COUNTRIES = 'ALLOWED_COUNTRIES';
+
+export const JWT_ACCESS_TOKEN_SECRET = 'JWT_ACCESS_TOKEN_SECRET';
+
+export const JWT_REFRESH_TOKEN_SECRET = 'JWT_REFRESH_TOKEN_SECRET';
+
+export const JWT_ACCESS_TOKEN_EXP = 'JWT_ACCESS_TOKEN_EXP';
+
+export const JWT_REFRESH_TOKEN_EXP = 'JWT_REFRESH_TOKEN_SECRET';
