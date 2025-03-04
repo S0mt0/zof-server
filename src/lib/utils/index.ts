@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import ShortUniqueId from 'short-unique-id';
 import {
   PROFILE_IMGS_COLLECTIONS_LIST,
@@ -101,32 +100,3 @@ export const obscureEmail = (email: string) => {
     }
   }
 };
-
-// /**
-//  * Verifies a jwt token and returns the decoded data if verified, or an error message if token fails verification
-//  * @param token
-//  * @param secret
-//  * @returns decoded `data` OR `error message`
-//  */
-// export const verifyJwtToken = (
-//   token: string,
-//   options?: { message?: string },
-//   secret: string = envs.jwtSecret,
-// ) => {
-//   try {
-//     const data = jwt.verify(token, secret);
-//     if (data && typeof data !== 'string') return { data };
-//   } catch (err) {
-//     let message = 'Invalid Token.';
-
-//     if (err?.message?.toLowerCase()?.includes('expired')) {
-//       message =
-//         options.message ||
-//         'Hey champ! Your session expired, please login again.';
-//     }
-
-//     return {
-//       error: message,
-//     };
-//   }
-// };

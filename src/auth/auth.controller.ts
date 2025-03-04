@@ -20,6 +20,7 @@ import {
   ResetPasswordUserDTO,
 } from './dto';
 import { TIME_IN, accounts } from 'src/lib/constants';
+import { LocalAuthGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -61,6 +62,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
     const response = await this.authService.login(loginUserDto);
 

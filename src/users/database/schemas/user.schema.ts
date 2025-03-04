@@ -4,12 +4,7 @@ import { isEmail } from 'class-validator';
 
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
-import {
-  IUser,
-  IUserModel,
-  IUserMethods,
-  UserDocument,
-} from '../interface/index';
+import { IUser } from '../interface/index';
 import {
   PROFILE_IMGS_COLLECTIONS_LIST,
   PROFILE_IMGS_NAME_LIST,
@@ -23,12 +18,33 @@ const jwtService = new JwtService();
 const configService = new ConfigService();
 
 @Schema({
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true },
+  toJSON: {
+    virtuals: true,
+    transform: function (doc, ret) {
+      delete ret.password;
+      delete ret.terms_of_service;
+      delete ret.refresh_token;
+      delete ret.createdAt;
+      delete ret.updatedAt;
+      delete ret.__v;
+      return ret;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    transform: function (doc, ret) {
+      delete ret.password;
+      delete ret.terms_of_service;
+      delete ret.refresh_token;
+      delete ret.createdAt;
+      delete ret.updatedAt;
+      delete ret.__v;
+      return ret;
+    },
+  },
   timestamps: true,
 })
 export class User implements IUser {
-  [x: string]: any;
   @Prop({ required: [true, 'First name is required'] })
   first_name: string;
 
@@ -67,6 +83,9 @@ export class User implements IUser {
   })
   roles: string[];
 
+  @Prop()
+  address: string;
+
   fullName: string;
 
   @Prop({ type: String, required: true, enum: ['admin', 'user'] })
@@ -83,7 +102,44 @@ export class User implements IUser {
 
   @Prop()
   refresh_token: string;
+
+  /** Verifies the provided password by comparing it with the password of the user. */
+  verifyPassword: (candidatePassword: string) => Promise<boolean>;
+
+  /** Creates and returns a `jwt` access token encoded with the `userId`, `roles` and `account_type` property */
+  createAccessToken: (expiresAt?: number | string | undefined) => string;
+
+  /** Creates and returns a `jwt` token encoded with the `email`, `code`, `token` `account_type`, and `expiresAt` properties that will be sent when there's a request to reset a forgotten password.
+   * @param maxLength The maximum length of the code generated. Defaults to 4
+   * @param expiresAt The lifespan of the code generated. Defaults to  15. Example: 1 = 1 minute, 15 = 15 minutes
+   */
+  createResetPasswordToken: (
+    maxLength?: number,
+    expiresAt?: number,
+  ) => {
+    code: number;
+    expiresAt: number;
+    token: string;
+    email: string;
+    account_type: AccountType;
+  };
+
+  /** Creates and returns a `jwt` token encoded with the `email`, `code`, `token`, and `account_type` properties which is required to be sent along when there's a request to verify a admin's email
+   * @param expiresAt The lifespan of the code generated. Defaults to  15. Example: 1 = 1 minute, 15 = 15 minutes
+   */
+  createEmailVerificationToken: (
+    maxLength?: number,
+    expiresAt?: number,
+  ) => {
+    code: number;
+    token: string;
+    email: string;
+    account_type: AccountType;
+  };
 }
+
+// Define document type
+export type UserDocument = HydratedDocument<User>;
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
@@ -162,9 +218,6 @@ UserSchema.methods = {
 };
 
 // Static Method
-UserSchema.statics.findByEmail = async function (
-  this: IUserModel,
-  email: string,
-): Promise<HydratedDocument<IUser, IUserMethods>> {
+UserSchema.statics.findByEmail = async function (email: string) {
   return this.findOne({ email }).exec();
 };

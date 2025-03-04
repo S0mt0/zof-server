@@ -4,6 +4,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { STRATEGY } from '../constants';
 
 @Injectable()
-class LocalAuthenticationGuard extends AuthGuard(STRATEGY.local) {}
+export class LocalAuthGuard extends AuthGuard(STRATEGY.local) {}
 
-export const LocalAuthGuard = () => UseGuards(LocalAuthenticationGuard);
+// export const LocalAuthGuard = () => UseGuards(LocalAuthenticationGuard);

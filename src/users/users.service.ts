@@ -4,42 +4,41 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
-import { User } from './database/schemas/user.schema';
-import { CreateUserDto } from './dto';
-import { IUserModel, UserDocument } from './database/interface';
+import { User, UserDocument } from './database/schemas/user.schema';
+import {
+  ChangePasswordDto,
+  CreateUserDto,
+  UpdateProfileDto,
+  UpdateUserDto,
+} from './dto';
+import { UserModel } from './database/interface';
 import { emailVerificationTemplate } from '../lib/email/template';
 import { obscureEmail } from '../lib';
 import { UserAuthRes } from './types';
-import { ConfigService } from '@nestjs/config';
 import { MailService } from '../mailer/mailer.service';
-import { Model } from 'mongoose';
 import { accounts } from 'src/lib/constants';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: IUserModel,
+    @InjectModel(User.name) private userModel: UserModel,
 
     private readonly mailService: MailService,
   ) {}
-  // async findOne(): Promise<User | undefined> {
-  //   return;
-  // }
-  public async findOne(id: string): Promise<User> {
+
+  public async findOne(id: string): Promise<UserDocument> {
     const user = await this.userModel.findById(id).exec();
     if (!user) throw new NotFoundException(`User with ID ${id} not found`);
     return user;
   }
 
-  public async findByEmail(email: string): Promise<User | null> {
+  public async findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findByEmail(email);
   }
 
   /** Updates user password
-   * @returns Company account Document
+   * @returns User account Document
    */
   public resetPassword = async (data: any) => {
     const foundAccount = await this.userModel.findById(data.userId);
@@ -72,7 +71,7 @@ export class UsersService {
     return foundUser.createAccessToken();
   }
 
-  public async authenticateEmail(data: any) {
+  public async authenticateEmail(data: any): Promise<UserDocument> {
     const user = await this.findByEmail(data.email);
     if (!user) {
       throw new UnauthorizedException('Invalid verification data');
@@ -133,5 +132,43 @@ export class UsersService {
       throw new NotFoundException(`User with email ${email} not found`);
 
     return await this.userModel.deleteOne({ email }).exec();
+  }
+
+  public async updateUserProfile(
+    userId: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<User> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(userId, updateProfileDto, { new: true })
+      .select('-password');
+
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    return updatedUser;
+  }
+
+  public async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<UserDocument> {
+    const user = await this.findOne(userId);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    // Verify old password
+    const isPasswordValid = await user.verifyPassword(
+      changePasswordDto.old_password,
+    );
+    if (!isPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    user.password = changePasswordDto.new_password;
+
+    return user.save();
   }
 }

@@ -40,6 +40,9 @@ export function Match(property: string, validationOptions?: ValidationOptions) {
 
 // New Password DTO
 export class NewPasswordDto {
+  old_password(old_password: any) {
+    throw new Error('Method not implemented.');
+  }
   @IsString()
   @IsNotEmpty({ message: 'New password is required' })
   @MinLength(6, { message: 'Password must be at least 6 characters long' })

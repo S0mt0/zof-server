@@ -7,14 +7,12 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service';
-import { UserDocument } from 'src/users/database/interface';
 import { ConfigService } from '@nestjs/config';
 import { TIME_IN, accounts } from 'src/lib/constants';
 import { LoginUserDto } from './dto';
 import { MailService } from 'src/mailer/mailer.service';
 import {
   emailVerificationResendTemplate,
-  emailVerificationTemplate,
   newPasswordSuccessTemplate,
   obscureEmail,
   resetPasswordTemplate,
@@ -24,6 +22,7 @@ import {
   NewPasswordDto,
   ResetPasswordUserDTO,
 } from './dto';
+import { User } from 'src/users/database/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -94,7 +93,7 @@ export class AuthService {
   public async verifyEmail(
     verificationCode: string,
     decoded: any,
-  ): Promise<{ accessToken: string; user: UserDocument }> {
+  ): Promise<{ accessToken: string; user: User }> {
     const user = await this.usersService.authenticateEmail({
       ...decoded,
       verificationCode,
