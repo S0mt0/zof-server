@@ -1,10 +1,13 @@
-import { Document, HydratedDocument, Model } from 'mongoose';
+import { Document, HydratedDocument, Model, ObjectId, Types } from 'mongoose';
 import { AccountType } from '../../../lib';
 import { UserDocument } from '../schemas/user.schema';
 
 export interface IUser {
   /** Google userId */
   // googleId: string;
+
+  /** user blog Id */
+  blogs: Types.ObjectId[];
 
   /** User's first name */
   first_name: string;

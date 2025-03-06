@@ -138,7 +138,7 @@ export class AuthService {
       });
 
       return {
-        success: false,
+        success: true,
         message: `Your email has not been verified. Use the code that was sent to ${obscureEmail(this.session.emaill)}`,
         token,
       };
@@ -150,6 +150,20 @@ export class AuthService {
       const refresh_token = this.session.createAccessToken(
         refreshTokenExpiresIn,
       );
+
+      this.session.refresh_token = refresh_token;
+      await this.session.save();
+
+      return {
+        token: this.token,
+        success: true,
+        message: 'Login successful',
+        data: this.session,
+      };
+    }
+
+    if (this.session?.account_type === accounts.User) {
+      const refresh_token = this.session.createAccessToken();
 
       this.session.refresh_token = refresh_token;
       await this.session.save();
