@@ -18,10 +18,32 @@ POST http://localhost:8000/api/v1/blogs
 Content-Type: application/json
 
 {
-    "title": "Become A Fullstack Web Dev In 1 Week",
+    "title": "Become A Fullstack Web Dev In A Day",
     "desc": "Do you aspire to become an ondemand fullstack webdevelper? Then this is the opportunity for you. Get onboard with our 1 week long training bootcamp to get started.",
     "banner": "imageUrl",  
     "draft": false,
     "featured":true,
     "content":{"blocks": [{"id":"blog id", "type":"header"}]}
+}
+
+### GET request
+GET http://localhost:8000/api/v1/blogs/
+
+### DELETE request
+DELETE http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day
+
+### GET request
+GET http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day
+
+### PATCH request
+PATCH http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day
+Content-Type: application/json
+
+{
+    "title": "Become A Fullstack Web Dev In A Day",
+    "desc": "Do you aspire to become an ondemand fullstack webdevelper? Then this is the opportunity for you. Get onboard with our 1 week long training bootcamp to get started.",
+    "banner": "imageUrl",  
+    "draft": true,
+    "featured":false,
+    "content":{"blocks": [{"id":"blog id", "type":"paragraph"}]}
 }

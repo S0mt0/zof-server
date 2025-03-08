@@ -11,8 +11,9 @@ import {
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-import { StringPipe } from 'src/lib/pipes';
+import { Message } from 'src/lib/decorators';
 
+@Message()
 @Controller('blogs')
 export class BlogsController {
   constructor(private readonly blogsService: BlogsService) {}
@@ -22,26 +23,28 @@ export class BlogsController {
     return this.blogsService.create(createBlogDto);
   }
 
+  @Get(':blogId')
+  findByBlogId(@Param('blogId') blogId: string) {
+    return this.blogsService.findByBlogId(blogId);
+  }
+
   @Get()
   findAll() {
     return this.blogsService.findAll();
   }
 
-  @Get(':blogId')
-  findByBlogId(@Param('blogId', StringPipe) blogId: string) {
-    return this.blogsService.findByBlogId(blogId);
-  }
-
-  @Delete(':blogId')
-  delete(@Param('blogId', StringPipe) blogId: string) {
-    return this.blogsService.delete(blogId);
-  }
-
+  @Message('Blog updated')
   @Patch(':blogId')
   update(
-    @Param('blogId', StringPipe) blogId: string,
+    @Param('blogId') blogId: string,
     @Body() updateBlogDto: UpdateBlogDto,
   ) {
     return this.blogsService.update(blogId, updateBlogDto);
+  }
+
+  @Message('Blog deleted')
+  @Delete(':blogId')
+  delete(@Param('blogId') blogId: string) {
+    return this.blogsService.delete(blogId);
   }
 }

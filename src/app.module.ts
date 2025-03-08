@@ -12,6 +12,8 @@ import { MailModule } from './mailer/mailer.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { BlogsModule } from './blog/blogs.module';
 import { AppConfigModule } from './lib/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ResponseInterceptor } from './lib/interceptors';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { AppConfigModule } from './lib/config';
     ThrottlerModule.forRoot([
       {
         ttl: TIME_IN.minutes[1],
-        limit: 100, // Max 100 requests per minute
+        limit: 100,
       },
     ]),
     BlogsModule,
@@ -32,6 +34,11 @@ import { AppConfigModule } from './lib/config';
     CloudinaryModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+  ],
 })
 export class AppModule {}

@@ -1,6 +1,6 @@
 services:
   dev-db:
-    image: mongo:latest
+    image: mongo:8
     environment:
       MONGO_INITDB_ROOT_USERNAME: sewkito
       MONGO_INITDB_ROOT_PASSWORD: 123
@@ -27,8 +27,6 @@ services:
       - '8080:8081'
     networks:
       - zof
-    volumes:
-      - mongo-express_data:/data/db
     depends_on:
       dev-db:
         condition: service_healthy
@@ -56,4 +54,3 @@ networks:
 volumes:
   mongodb_dev_data:
   redis_dev_data:
-  mongo-express_data:
