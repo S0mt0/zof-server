@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Patch,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Multer } from 'multer';
@@ -86,17 +87,47 @@ export class UsersController {
     @Req() request,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    const user = request.user as any; // Extract user from JWT
+    const user = request.user as any;
     return await this.usersService.changePassword(user.id, changePasswordDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return '';
+  @Get('refresh-token')
+  async refreshToken(@Req() request, @Res() response: Response) {
+    const { refresh_token } = request.cookies;
+
+    if (!refresh_token) {
+      throw new UnauthorizedException('Session expired, please login again.');
+    }
+
+    const accessToken = await this.usersService.refreshToken(refresh_token);
+
+    response.setHeader('Authorization', accessToken);
+    return response.status(200).json({ success: true, accessToken });
   }
 
-  @Delete('email')
-  async deleteByEmail(@Body() email: string) {
-    return this.usersService.deleteByEmail(email);
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req, @Res() res: Response) {
+    const user = req.user as any;
+    await this.usersService.logout(user.id);
+
+    res.clearCookie('refresh_token', {
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none',
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, message: 'Logout successful' });
   }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return '';
+  // }
+
+  // @Delete('email')
+  // async deleteByEmail(@Body() email: string) {
+  //   return this.usersService.deleteByEmail(email);
+  // }
 }

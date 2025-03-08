@@ -17,7 +17,7 @@ import { emailVerificationTemplate } from '../lib/email/template';
 import { obscureEmail } from '../lib';
 import { UserAuthRes } from './types';
 import { MailService } from '../mailer/mailer.service';
-import { accounts } from 'src/lib/constants';
+import { TIME_IN, accounts } from 'src/lib/constants';
 
 @Injectable()
 export class UsersService {
@@ -170,5 +170,35 @@ export class UsersService {
     user.password = changePasswordDto.new_password;
 
     return user.save();
+  }
+
+  public async refreshToken(refreshToken: string): Promise<string> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Session expired, please login again.');
+    }
+
+    const user = await this.userModel.findOne({ refreshToken });
+
+    if (!user) {
+      throw new UnauthorizedException('Session expired, please login again.');
+    }
+
+    // Generate new access token
+    const accessToken = user.createAccessToken(TIME_IN.minutes[5]);
+
+    return accessToken;
+  }
+
+  public async logout(userId: string): Promise<string> {
+    const user = await this.findOne(userId);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    user.refresh_token = '';
+    await user.save();
+
+    return 'Logout successful';
   }
 }

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { isEmail } from 'class-validator';
 
 import * as argon from 'argon2';
@@ -45,6 +45,9 @@ const configService = new ConfigService();
   timestamps: true,
 })
 export class User implements IUser {
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Blog' }] }) // Relation with Blogs
+  blogs: Types.ObjectId[];
+
   @Prop({ required: [true, 'First name is required'] })
   first_name: string;
 
