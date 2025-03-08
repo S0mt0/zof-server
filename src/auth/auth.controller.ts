@@ -45,7 +45,7 @@ export class AuthController {
     if (!token) throw new UnauthorizedException('Invalid Authorization header');
 
     //  Decode token (assuming JWT is used)
-    const { error, data } = this.authService.verifyJwtToken(token); // You need a method to decode JWT
+    const { error, data } = this.authService.verifyJwtToken(token);
     // console.log(data);
     if (error) throw new UnauthorizedException(error);
     // Verify email using the verification code
@@ -114,7 +114,7 @@ export class AuthController {
     if (!token) throw new UnauthorizedException('Invalid Authorization header');
 
     //  Decode token (assuming JWT is used)
-    const { error, data } = this.authService.verifyJwtToken(token); // You need a method to decode JWT
+    const { error, data } = this.authService.verifyJwtToken(token);
     // console.log(data);
     if (error) throw new UnauthorizedException(error);
     const response = await this.authService.verifyPasswordResetCode(
@@ -144,7 +144,7 @@ export class AuthController {
     if (!token) throw new UnauthorizedException('Invalid Authorization header');
 
     //  Decode token (assuming JWT is used)
-    const { error, data } = this.authService.verifyJwtToken(token); // You need a method to decode JWT
+    const { error, data } = this.authService.verifyJwtToken(token);
     // console.log(data);
     if (error) throw new UnauthorizedException(error);
     if (!data.userId) throw new UnauthorizedException(error);
@@ -169,12 +169,12 @@ export class AuthController {
     if (!authHeader)
       throw new UnauthorizedException('Missing Authorization header');
 
-    const token = authHeader.split(' ')[1]; // Extract token after "Bearer "
+    const token = authHeader.split(' ')[1];
     if (!token) throw new UnauthorizedException('Invalid Authorization header');
 
     //  Decode token (assuming JWT is used)
-    const { error, data } = this.authService.verifyJwtToken(token); // You need a method to decode JWT
-    // console.log(data);
+    const { error, data } = this.authService.verifyJwtToken(token);
+
     if (error) throw new UnauthorizedException(error);
     if (!data.email) throw new UnauthorizedException(error);
 
@@ -199,8 +199,8 @@ export class AuthController {
     if (!token) throw new UnauthorizedException('Invalid Authorization header');
 
     //  Decode token (assuming JWT is used)
-    const { error, data } = this.authService.verifyJwtToken(token); // You need a method to decode JWT
-    // console.log(data);
+    const { error, data } = this.authService.verifyJwtToken(token);
+
     if (error) throw new UnauthorizedException(error);
     if (!data.email) throw new UnauthorizedException(error);
 
