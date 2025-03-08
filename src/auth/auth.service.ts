@@ -70,7 +70,7 @@ export class AuthService {
     options?: { message?: string },
   ): { data?: any; error?: string } {
     try {
-      const secret = this.configService.get<string>('JWT_SECRET');
+      const secret = this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET');
 
       const data = this.jwtService.verify(token, { secret });
 

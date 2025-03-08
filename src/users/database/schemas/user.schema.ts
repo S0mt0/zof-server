@@ -168,7 +168,7 @@ UserSchema.methods = {
     return jwtService.sign(
       { sub: this._id, roles: this.roles, account_type: this.account_type },
       {
-        secret: configService.get('JWT_SECRET'),
+        secret: configService.get('JWT_ACCESS_TOKEN_SECRET'),
         expiresIn: expiresAt || TIME_IN.days[3],
       },
     );
@@ -187,7 +187,7 @@ UserSchema.methods = {
       account_type: this.account_type,
     };
     const token = jwtService.sign(data, {
-      secret: configService.get('JWT_SECRET'),
+      secret: configService.get('JWT_ACCESS_TOKEN_SECRET'),
       expiresIn: `${expiresAt || TIME_IN.minutes[15]}`,
     });
 
@@ -210,7 +210,7 @@ UserSchema.methods = {
       account_type: this.account_type,
     };
     const token = jwtService.sign(data, {
-      secret: configService.get('JWT_SECRET'),
+      secret: configService.get('JWT_ACCESS_TOKEN_SECRET'),
       expiresIn: `${expiresAt || TIME_IN.hours[1]}`,
     });
     return { ...data, token };

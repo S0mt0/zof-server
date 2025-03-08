@@ -3,7 +3,9 @@ import { IsString, validateSync } from 'class-validator';
 
 class EnvironmentVariables {
   @IsString()
-  MONGO_URL: string;
+  DATABASE_URL: string;
+  JWT_ACCESS_TOKEN_SECRET: string;
+  JWT_ACCESS_TOKEN_EXP: string;
 }
 
 export function validate(config: Record<string, unknown>) {

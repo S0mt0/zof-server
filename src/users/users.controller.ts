@@ -10,7 +10,6 @@ import {
   Res,
   UseInterceptors,
   UploadedFile,
-  Put,
   Patch,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -19,12 +18,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import {
-  UpdateProfileDto,
-  CreateUserDto,
-  UpdateUserDto,
-  ChangePasswordDto,
-} from './dto';
+import { UpdateProfileDto, CreateUserDto, ChangePasswordDto } from './dto';
 
 @Controller('users')
 export class UsersController {
@@ -58,35 +52,34 @@ export class UsersController {
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('avatar'))
-  async updateProfile(
-    @Req() request,
-    @UploadedFile() file: Multer.File,
-    @Body() updateProfileDto: UpdateProfileDto,
-  ) {
-    const user = request.user as any; // Extract user from JWT
+  // async updateProfile(
+  //   @Req() request,
+  //   // @UploadedFile() file: Multer.File,
+  //   @Body() updateProfileDto: UpdateProfileDto,
+  // ) {
+  //   const user = request.user as any; // Extract user from JWT
 
-    let avatarUrl = user.avatarUrl;
+  //   let avatarUrl = user.avatarUrl;
 
-    if (file) {
-      avatarUrl = await this.cloudinaryService.uploadImage(file);
+  //   if (file) {
+  //     avatarUrl = await this.cloudinaryService.uploadImage(file);
 
-      // Delete old avatar if a new one is uploaded
-      if (user.avatarUrl) {
-        await this.cloudinaryService.deleteImage(user.avatarUrl);
-      }
-    }
+  //     // Delete old avatar if a new one is uploaded
+  //     if (user.avatarUrl) {
+  //       await this.cloudinaryService.deleteImage(user.avatarUrl);
+  //     }
+  //   }
 
-    const updatedUser = await this.usersService.updateUserProfile(user.id, {
-      ...updateProfileDto,
-    });
+  //   const updatedUser = await this.usersService.updateUserProfile(user.id, {
+  //     ...updateProfileDto,
+  //   });
 
-    return {
-      success: true,
-      message: 'Profile updated successfully',
-      data: updatedUser,
-    };
-  }
-
+  //   return {
+  //     success: true,
+  //     message: 'Profile updated successfully',
+  //     data: updatedUser,
+  //   };
+  // }
   @Patch('change-password')
   @UseGuards(JwtAuthGuard)
   async changePassword(

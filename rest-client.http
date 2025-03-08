@@ -2,7 +2,7 @@
 GET http://localhost:8000/api/v1/users
 
 ### POST request
-POST http://localhost:3000/api/v1/auth/register
+POST http://localhost:8000/api/v1/auth/register
 Content-Type: application/json
 
 {
@@ -11,4 +11,17 @@ Content-Type: application/json
     "email": "skey@mail.co",  
     "terms_of_service": true,
     "password":"Password123!"
+}
+
+### POST request
+POST http://localhost:8000/api/v1/blogs
+Content-Type: application/json
+
+{
+    "title": "Become A Fullstack Web Dev In 1 Week",
+    "desc": "Do you aspire to become an ondemand fullstack webdevelper? Then this is the opportunity for you. Get onboard with our 1 week long training bootcamp to get started.",
+    "banner": "imageUrl",  
+    "draft": false,
+    "featured":true,
+    "content":{"blocks": [{"id":"blog id", "type":"header"}]}
 }

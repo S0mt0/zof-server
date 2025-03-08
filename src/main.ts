@@ -6,14 +6,14 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { corsOptions } from './lib/config';
 import { PORT } from './lib/constants';
-// import { AllExceptionsFilter } from './lib/filters';
+import { AllExceptionsFilter } from './lib/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('/api/v1/');
 
-  // const { httpAdapter } = app.get(HttpAdapterHost);
-  // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -1,4 +1,4 @@
-export type TRoles = 'user' | 'admin' | 'x-admin';
+export type TRole = 'user' | 'admin' | 'x-admin';
 
 export type Minutes =
   | 1

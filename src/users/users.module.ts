@@ -14,9 +14,9 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION'),
+          expiresIn: configService.get<string>('JWT_ACCESS_TOKEN_EXP'),
         },
       }),
       inject: [ConfigService],

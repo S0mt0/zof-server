@@ -1,54 +1,44 @@
 services:
   dev-db:
-    image: postgres:17-alpine
+    image: mongo:latest
     environment:
-      POSTGRES_USER: sewkito
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: gatherpay
+      MONGO_INITDB_ROOT_USERNAME: sewkito
+      MONGO_INITDB_ROOT_PASSWORD: 123
+      MONGO_INITDB_DATABASE: zof
     ports:
-      - '5434:5432'
+      - '27018:27017'
     networks:
-      - gatherpay
+      - zof
     volumes:
-      - postgres_dev_data:/var/lib/postgresql/data
+      - mongodb_dev_data:/data/db
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U sewkito -d gatherpay']
+      test: ['CMD', 'mongosh', '--eval', 'db.runCommand("ping").ok']
       interval: 5s
       timeout: 5s
       retries: 5
 
-  pgadmin:
-    image: dpage/pgadmin4:8
+  mongo-express:
+    image: mongo-express:1.0
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      ME_CONFIG_MONGODB_URL: mongodb://sewkito:123@dev-db:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
     ports:
-      - '5050:80'
+      - '8080:8081'
     networks:
-      - gatherpay
+      - zof
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - mongo-express_data:/data/db
     depends_on:
       dev-db:
         condition: service_healthy
-
-  test-db:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: sewkito
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: gatherpay
-    ports:
-      - '5435:5432'
-    networks:
-      - gatherpay
 
   redis:
     image: redis:7-alpine
     ports:
       - '6379:6379'
     networks:
-      - gatherpay
+      - zof
     volumes:
       - redis_dev_data:/data
 
@@ -57,13 +47,13 @@ services:
     ports:
       - '6380:6379'
     networks:
-      - gatherpay
+      - zof
 
 networks:
-  gatherpay:
+  zof:
     driver: bridge
 
 volumes:
-  postgres_dev_data:
+  mongodb_dev_data:
   redis_dev_data:
-  pgadmin_data:
+  mongo-express_data:

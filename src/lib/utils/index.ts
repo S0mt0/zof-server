@@ -100,3 +100,40 @@ export const obscureEmail = (email: string) => {
     }
   }
 };
+
+/**
+ * Transforms the return mongodb document by removing specified schema properties
+ * @param schemaProps - array of schema properties
+ * @returns Transform function of a mongodb schema
+ */
+export const removeSchemaProps = (schemaProps: string[]) => {
+  return (_, ret: Record<string, any>) => {
+    if (schemaProps.length) {
+      schemaProps.forEach((prop) => {
+        if (prop.includes('.')) {
+          const [parent, child] = prop.split('.');
+          if (ret[parent]) delete ret[parent][child];
+        }
+
+        delete ret[prop];
+      });
+    }
+
+    delete ret.id;
+    delete ret.__v;
+
+    return ret;
+  };
+};
+
+/**
+ * @param schemaProps - array of optional schema properties that should be removed when converting a mongo document to plain javascript object or when toJSON is called
+ * @returns toObject/toJSON document options
+ */
+export const transformSchema = (schemaProps?: string[]) => {
+  return {
+    virtuals: true,
+    versionKey: false,
+    transform: removeSchemaProps(schemaProps),
+  };
+};
