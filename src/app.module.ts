@@ -13,6 +13,8 @@ import { MailModule } from './mailer/mailer.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AppConfigModule } from './lib/config';
 import { ResponseInterceptor } from './lib/interceptors';
+import { EventsService } from './events/events.service';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { ResponseInterceptor } from './lib/interceptors';
     BlogsModule,
     MailModule,
     CloudinaryModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -38,6 +41,7 @@ import { ResponseInterceptor } from './lib/interceptors';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
+    EventsService,
   ],
 })
 export class AppModule {}
