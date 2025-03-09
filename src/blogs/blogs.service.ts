@@ -51,7 +51,7 @@ export class BlogsService {
       .sort(sort)
       .select(fieldsList)
       .skip(skip)
-      .limit(limit);
+      .limit(limit > 10 ? 10 : limit);
 
     const totalCount = await this.blogModel.countDocuments(filter);
 
