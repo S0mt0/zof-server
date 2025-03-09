@@ -1,100 +1,63 @@
 import {
-  IsArray,
-  IsInt,
-  IsMongoId,
-  IsObject,
-  IsOptional,
   IsString,
-  ValidateNested,
+  IsBoolean,
+  MinLength,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  Validate,
+  IsOptional,
+  MaxLength,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { Types } from 'mongoose';
+import { BlogContent } from '../schema/blog.type';
 
-export type BlockType = 'paragraph' | 'header' | 'list' | 'image' | 'attaches';
+@ValidatorConstraint({ name: 'IsBlogContent', async: false })
+export class IsBlogContentConstraint implements ValidatorConstraintInterface {
+  validate(value: BlogContent) {
+    if (!value) return false;
 
-export class FileDataDto {
-  @IsString()
-  url: string;
+    if (typeof value !== 'object') return false;
 
-  @IsOptional()
-  @IsInt()
-  size?: number;
+    if (!Object.keys(value).length) return false;
 
-  @IsOptional()
-  @IsString()
-  name?: string;
+    if (!Object.keys(value).includes('blocks')) return false;
 
-  @IsOptional()
-  @IsString()
-  extension?: string;
-}
+    if (!Array.isArray(value.blocks)) return false;
 
-export class BlockDataDto {
-  @IsOptional()
-  @IsString()
-  text?: string;
+    if (!value.blocks.length) return false;
 
-  @IsOptional()
-  @IsInt()
-  level?: number;
+    const hasEmptyBlocks = Boolean(
+      value.blocks.filter((block) => !Object.keys(block).length).length,
+    );
 
-  @IsOptional()
-  @IsString()
-  type?: 'unordered' | 'ordered';
+    return !hasEmptyBlocks;
+  }
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  items?: string[];
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => FileDataDto)
-  file?: FileDataDto;
-
-  @IsOptional()
-  @IsObject()
-  tunes?: Record<string, any>;
-
-  @IsOptional()
-  withBorder?: boolean;
-
-  @IsOptional()
-  withBackground?: boolean;
-
-  @IsOptional()
-  stretched?: boolean;
-
-  @IsOptional()
-  @IsString()
-  caption?: string;
-
-  @IsOptional()
-  @IsString()
-  title?: string;
-}
-
-export class BlockDto {
-  @IsString()
-  id: string;
-
-  @IsString()
-  type: BlockType;
-
-  @ValidateNested()
-  @Type(() => BlockDataDto)
-  data: BlockDataDto;
+  defaultMessage(): string {
+    return 'Blog content is required.';
+  }
 }
 
 export class CreateBlogDto {
-  @IsInt()
-  time: number;
+  @IsString({ message: 'Blog title is required.' })
+  @MinLength(5)
+  title: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => BlockDto)
-  blocks: BlockDto[];
+  @IsString({ message: 'Blog description is required.' })
+  @MinLength(10)
+  @MaxLength(200)
+  desc: string;
 
-  // @IsMongoId()
-  // user: Types.ObjectId; // Relating the blog to a user
+  @IsString({ message: 'Please provide a cover image.' })
+  banner: string;
+
+  @IsBoolean()
+  @IsOptional()
+  featured: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  draft: boolean;
+
+  @Validate(IsBlogContentConstraint)
+  content: BlogContent;
 }

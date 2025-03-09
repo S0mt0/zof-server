@@ -8,7 +8,6 @@ export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema({
   timestamps: true,
-  versionKey: false,
   toJSON: transformSchema(['_id']),
 })
 export class Blog implements IBlog {
@@ -17,7 +16,7 @@ export class Blog implements IBlog {
     required: true,
     unique: true,
     default: function () {
-      return this.title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-');
+      return syncBlogIdWithTitle(this.title);
     },
   })
   blogId: string;
@@ -46,23 +45,12 @@ export class Blog implements IBlog {
       blocks: [
         {
           _id: false,
-          id: { type: String },
           type: {
             type: String,
             enum: ['paragraph', 'header', 'list', 'image', 'quote'],
           },
           data: {
-            text: { type: String },
-            level: { type: Number },
             style: { type: String, enum: ['unordered', 'ordered'] },
-            items: [{ type: String }],
-            file: {
-              url: { type: String },
-              size: { type: Number },
-              name: { type: String },
-            },
-            caption: { type: String },
-            title: { type: String },
           },
         },
       ],
@@ -73,3 +61,6 @@ export class Blog implements IBlog {
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
+
+export const syncBlogIdWithTitle = (title: string) =>
+  title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-');

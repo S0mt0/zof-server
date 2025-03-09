@@ -1,6 +1,6 @@
 services:
   dev-db:
-    image: mongo:8
+    image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: sewkito
       MONGO_INITDB_ROOT_PASSWORD: 123

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
@@ -10,9 +11,7 @@ import { TIME_IN } from './lib/constants';
 import { BlogsModule } from './blogs/blogs.module';
 import { MailModule } from './mailer/mailer.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { BlogsModule } from './blog/blogs.module';
 import { AppConfigModule } from './lib/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './lib/interceptors';
 
 @Module({

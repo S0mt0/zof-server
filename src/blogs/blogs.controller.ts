@@ -1,76 +1,52 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
   Post,
-  UseGuards,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
 } from '@nestjs/common';
-import { BlogsService } from './blogs.service';
-import { CreateBlogDto } from './dto';
-import { JwtAuthGuard } from 'src/auth/guards';
 
+import { BlogsService } from './blogs.service';
+import { CreateBlogDto } from './dto/create-blog.dto';
+import { UpdateBlogDto } from './dto/update-blog.dto';
+import { Message } from 'src/lib/decorators';
+import { ParseBlogQueryDto } from './dto';
+
+@Message()
 @Controller('blogs')
 export class BlogsController {
-  constructor(private readonly blogService: BlogsService) {}
+  constructor(private readonly blogsService: BlogsService) {}
 
-  /**
-   *  Create a new blog
-   * @param userId - The ID of the user creating the blog
-   * @param createBlogDto - The blog content
-   * @returns The newly created blog
-   */
-
-  @Post(':userId')
-  @UseGuards(JwtAuthGuard)
-  async createBlog(
-    @Param('userId') userId: string,
-    @Body() createBlogDto: CreateBlogDto,
-  ) {
-    return await this.blogService.createBlog(userId, createBlogDto);
+  @Post()
+  create(@Body() createBlogDto: CreateBlogDto) {
+    return this.blogsService.create(createBlogDto);
   }
 
-  /**
-   *  Get all blogs
-   * @returns A list of all blogs
-   */
   @Get()
-  @UseGuards(JwtAuthGuard)
-  async getAllBlogs() {
-    return await this.blogService.getAllBlogs();
+  findAll(@Query() query: ParseBlogQueryDto) {
+    return this.blogsService.findAll(query);
   }
 
-  /**
-   *  Get a specific blog by ID
-   * @param blogId - The ID of the blog to retrieve
-   * @returns The blog details
-   */
   @Get(':blogId')
-  @UseGuards(JwtAuthGuard)
-  async getBlogById(@Param('blogId') blogId: string) {
-    return await this.blogService.getBlogById(blogId);
+  findByBlogId(@Param('blogId') blogId: string) {
+    return this.blogsService.findByBlogId(blogId);
   }
 
-  /**
-   *  Get all blogs by a specific user
-   * @param userId - The ID of the user
-   * @returns The list of blogs belonging to the user
-   */
-  @Get('user/:userId')
-  @UseGuards(JwtAuthGuard)
-  async getUserBlogs(@Param('userId') userId: string) {
-    return await this.blogService.getUserBlogs(userId);
+  @Message('Blog updated')
+  @Patch(':blogId')
+  update(
+    @Param('blogId') blogId: string,
+    @Body() updateBlogDto: UpdateBlogDto,
+  ) {
+    return this.blogsService.update(blogId, updateBlogDto);
   }
 
-  /**
-   *  Delete a blog
-   * @param blogId - The ID of the blog to delete
-   * @returns A success message
-   */
+  @Message('Blog deleted')
   @Delete(':blogId')
-  @UseGuards(JwtAuthGuard)
-  async deleteBlog(@Param('blogId') blogId: string) {
-    return await this.blogService.deleteBlog(blogId);
+  delete(@Param('blogId') blogId: string) {
+    return this.blogsService.delete(blogId);
   }
 }

@@ -29,13 +29,13 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
     if (exception instanceof HttpException) {
       errorResponse.statusCode = exception.getStatus();
-      errorResponse.response = exception.message;
+      errorResponse.response = exception.getResponse();
     }
 
     if (exception instanceof Error.ValidationError) {
       errorResponse.statusCode = HttpStatus.UNPROCESSABLE_ENTITY;
       errorResponse.response =
-        exception.message.split(':')[0] || 'Validation failed, try again.';
+        exception.message || 'Validation failed, try again.';
     }
 
     if (exception instanceof Error.DocumentNotFoundError) {

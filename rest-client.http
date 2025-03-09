@@ -18,32 +18,28 @@ POST http://localhost:8000/api/v1/blogs
 Content-Type: application/json
 
 {
-    "title": "Become A Fullstack Web Dev In A Day",
-    "desc": "Do you aspire to become an ondemand fullstack webdevelper? Then this is the opportunity for you. Get onboard with our 1 week long training bootcamp to get started.",
+    "title": "Test123",
+    "desc": "This is the opportunity for you. Get onboard with our 1 week long training bootcamp to get started.",
     "banner": "imageUrl",  
-    "draft": false,
-    "featured":true,
+    "draft": true,
+    "featured":false,
     "content":{"blocks": [{"id":"blog id", "type":"header"}]}
 }
 
 ### GET request
-GET http://localhost:8000/api/v1/blogs/
+GET http://localhost:8000/api/v1/blogs/?limit=2&page=1&title&fields=-content
 
 ### DELETE request
-DELETE http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day
+DELETE http://localhost:8000/api/v1/blogs/Become-A-Web-Developer-In-Just-1-Day
 
 ### GET request
 GET http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day
 
 ### PATCH request
-PATCH http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day
+PATCH http://localhost:8000/api/v1/blogs/okay-na
 Content-Type: application/json
 
 {
-    "title": "Become A Fullstack Web Dev In A Day",
-    "desc": "Do you aspire to become an ondemand fullstack webdevelper? Then this is the opportunity for you. Get onboard with our 1 week long training bootcamp to get started.",
-    "banner": "imageUrl",  
-    "draft": true,
-    "featured":false,
-    "content":{"blocks": [{"id":"blog id", "type":"paragraph"}]}
+
+    "title": "okay na, Somto is the name"
 }
