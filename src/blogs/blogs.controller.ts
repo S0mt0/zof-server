@@ -44,7 +44,6 @@ export class BlogsController {
     return this.blogsService.update(blogId, updateBlogDto);
   }
 
-  @Message('Blog deleted')
   @Delete(':blogId')
   delete(@Param('blogId') blogId: string) {
     return this.blogsService.delete(blogId);

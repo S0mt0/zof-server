@@ -1,28 +1,28 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { User, UserSchema } from './database/schemas/user.schema';
-import { MailModule } from '../mailer/mailer.module';
-import { ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { User, UserSchema } from './schema/user.schema';
+import {
+  JWT_ACCESS_TOKEN_EXP,
+  JWT_ACCESS_TOKEN_SECRET,
+} from 'src/lib/constants';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+        secret: configService.get<string>(JWT_ACCESS_TOKEN_SECRET),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_ACCESS_TOKEN_EXP'),
+          expiresIn: configService.get<string>(JWT_ACCESS_TOKEN_EXP),
         },
       }),
       inject: [ConfigService],
     }),
-    MailModule,
-    CloudinaryModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

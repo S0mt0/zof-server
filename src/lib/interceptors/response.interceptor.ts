@@ -9,7 +9,7 @@ import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { MESSAGE } from '../decorators';
+import { MESSAGE_KEY } from '../decorators';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
@@ -21,7 +21,7 @@ export class ResponseInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map((data) => {
-        const message = this.reflector.getAllAndOverride<string>(MESSAGE, [
+        const message = this.reflector.getAllAndOverride<string>(MESSAGE_KEY, [
           context.getHandler(),
           context.getClass(),
         ]);

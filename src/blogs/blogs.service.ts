@@ -22,17 +22,9 @@ export class BlogsService {
   }
 
   async findAll(query: ParseBlogQueryDto) {
-    const { title, blogId, sort, fields, draft, featured, page, limit } = query;
+    const { sort, fields, draft, featured, page, limit } = query;
 
     const filter: Record<string, any> = {};
-
-    if (title) {
-      filter.title = new RegExp(title, 'i');
-    }
-
-    if (blogId) {
-      filter.blogId = blogId;
-    }
 
     if (draft !== undefined) {
       filter.draft = draft;
@@ -84,7 +76,9 @@ export class BlogsService {
     return blog;
   }
 
-  delete(blogId: string) {
-    return this.blogModel.findOneAndDelete({ blogId });
+  async delete(blogId: string) {
+    await this.blogModel.findOneAndDelete({ blogId });
+
+    return 'Blog deleted';
   }
 }

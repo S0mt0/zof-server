@@ -12,14 +12,6 @@ import {
 export class ParseBlogQueryDto {
   @IsString()
   @IsOptional()
-  title?: string;
-
-  @IsString()
-  @IsOptional()
-  blogId?: string;
-
-  @IsString()
-  @IsOptional()
   @IsIn(['createdAt', '-createdAt', 'updatedAt', '-updatedAt']) // Since the only sortable properties of blog is the creation and update time, it only makes sense to restrict the sort parameters to these properties.
   @Transform(({ value }) => (value !== undefined ? value : '-createdAt'))
   sort?: string = '-createdAt';
@@ -30,7 +22,7 @@ export class ParseBlogQueryDto {
 
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => (value !== undefined ? value === 'true' : false))
+  @Transform(({ value }) => value === 'true')
   draft?: boolean;
 
   @IsBoolean()

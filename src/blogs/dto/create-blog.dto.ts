@@ -48,7 +48,7 @@ export class CreateBlogDto {
   desc: string;
 
   @IsString({ message: 'Please provide a cover image.' })
-  banner: string;
+  bannerUrl: string;
 
   @IsBoolean()
   @IsOptional()

@@ -22,7 +22,7 @@ import {
   NewPasswordDto,
   ResetPasswordUserDTO,
 } from './dto';
-import { User } from 'src/users/database/schemas/user.schema';
+import { User } from 'src/users/schema/user.schema';
 
 @Injectable()
 export class AuthService {

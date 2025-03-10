@@ -1,36 +1,21 @@
-### GET request
-GET http://localhost:8000/api/v1/users
-
-### POST request
-POST http://localhost:8000/api/v1/auth/register
-Content-Type: application/json
-
-{
-    "firstName": "Aboki",
-    "lastName": "Nkemakolam",
-    "email": "skey@mail.co",  
-    "terms_of_service": true,
-    "password":"Password123!"
-}
-
 ### POST request
 POST http://localhost:8000/api/v1/blogs
 Content-Type: application/json
 
 {
-    "title": "Test123",
+    "title": "Fullstack Project By Ayomide ^  % # hahah & Me",
     "desc": "This is the opportunity for you. Get onboard with our 1 week long training bootcamp to get started.",
-    "banner": "imageUrl",  
+    "bannerUrl": "imageUrl",  
     "draft": true,
     "featured":false,
     "content":{"blocks": [{"id":"blog id", "type":"header"}]}
 }
 
 ### GET request
-GET http://localhost:8000/api/v1/blogs/?limit=2&page=1&title&fields=-content
+GET http://localhost:8000/api/v1/blogs/?limit=4&page=1&fields=-content
 
 ### DELETE request
-DELETE http://localhost:8000/api/v1/blogs/Become-A-Web-Developer-In-Just-1-Day
+DELETE http://localhost:8000/api/v1/blogs/Fullstack-Project-By-Ayomide-hahah-Me
 
 ### GET request
 GET http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day

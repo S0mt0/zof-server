@@ -4,13 +4,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './lib/database/database.module';
 import { AppCacheModule } from './lib/cache/cache.module';
 import { TIME_IN } from './lib/constants';
 import { BlogsModule } from './blogs/blogs.module';
-import { MailModule } from './mailer/mailer.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AppConfigModule } from './lib/config';
 import { ResponseInterceptor } from './lib/interceptors';
 
@@ -27,10 +24,7 @@ import { ResponseInterceptor } from './lib/interceptors';
     ]),
     BlogsModule,
     UsersModule,
-    AuthModule,
     BlogsModule,
-    MailModule,
-    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [

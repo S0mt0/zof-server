@@ -37,7 +37,7 @@ export interface BlogContent {
 export interface IBlog {
   blogId: string;
   title: string;
-  banner: string;
+  bannerUrl: string;
   desc: string;
   featured: boolean;
   draft: boolean;

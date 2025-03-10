@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 import { BlogContent, IBlog } from './blog.type';
 import { transformSchema } from 'src/lib';
@@ -25,7 +25,7 @@ export class Blog implements IBlog {
   title: string;
 
   @Prop({ type: String, required: true })
-  banner: string;
+  bannerUrl: string;
 
   @Prop({ type: String, required: true, minlength: 10 })
   desc: string;
@@ -36,8 +36,8 @@ export class Blog implements IBlog {
   @Prop({ type: Boolean, default: true })
   draft: boolean;
 
-  // @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  // publishedBy: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  publishedBy: Types.ObjectId;
 
   @Prop({
     type: {
