@@ -10,6 +10,8 @@ import { TIME_IN } from './lib/constants';
 import { BlogsModule } from './blogs/blogs.module';
 import { AppConfigModule } from './lib/config';
 import { ResponseInterceptor } from './lib/interceptors';
+import { EventsService } from './events/events.service';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { ResponseInterceptor } from './lib/interceptors';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
+    EventsService,
   ],
 })
 export class AppModule {}

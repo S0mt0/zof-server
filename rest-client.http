@@ -28,3 +28,21 @@ Content-Type: application/json
 
     "title": "okay na, Somto is the name"
 }
+
+### POST request
+POST http://localhost:3000/api/v1/events
+Content-Type: application/json
+
+{
+    "title": "1000 student graduated from our bootcamp training",
+    "desc": "Get onboard with our 1 week long training bootcamp to get started.",
+    "banner": "imageUrl",  
+    "draft": true,
+    "featured":false,
+    "location": "ibadan olunyole",
+    "timestamp": "2024-05-21",
+    "more_details": "1000 student graduated from our bootcamp training"
+}
+
+### GET request
+GET http://localhost:3000/api/v1/events/1000-student-graduated-from-our-bootcamp-training
