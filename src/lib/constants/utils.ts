@@ -10,16 +10,7 @@ export const TIME_IN = {
   days: generateDays(),
 };
 
-export const APP_NAME = 'Co Foundation';
-
-/** **Account Types** object */
-export const accounts = {
-  /** `admin` account type */
-  ADMIN: 'admin',
-
-  /** `user` account type */
-  User: 'user',
-};
+export const APP_NAME = 'Zita-Onyeka Foundation';
 
 export const PROFILE_IMGS_NAME_LIST = [
   'Garfield',

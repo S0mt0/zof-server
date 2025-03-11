@@ -10,7 +10,12 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({
   timestamps: true,
-  toJSON: transformSchema(['refresh_token', 'password', 'socialId']),
+  toJSON: transformSchema([
+    'refresh_token',
+    'password',
+    'socialId',
+    'google_auth',
+  ]),
 })
 export class User {
   @Prop({

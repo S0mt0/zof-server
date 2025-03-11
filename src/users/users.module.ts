@@ -10,6 +10,7 @@ import {
   JWT_ACCESS_TOKEN_EXP,
   JWT_ACCESS_TOKEN_SECRET,
 } from 'src/lib/constants';
+import { AuthController } from './auth/auth.controller';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import {
       inject: [ConfigService],
     }),
   ],
-  controllers: [UsersController],
-  providers: [UsersService],
+  controllers: [UsersController, AuthController],
+  providers: [UsersService, UsersService],
   exports: [UsersService],
 })
 export class UsersModule {}
