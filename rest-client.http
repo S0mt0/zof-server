@@ -69,6 +69,11 @@ Content-Type: application/json
     "password": "Password123!."
 }
 
+### GET request
+GET http://localhost:8000/api/v1/auth/google?idToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTUzOTcwLCJleHAiOjE3NDE5NTc1NzB9.0sIpiJ03HTVjd6AT19Mi087GPtI3u77WOcfu38b_X-o
+
+
+
 ### POST request
 POST http://localhost:8000/api/v1/auth/verify-pr-code
 Content-Type: application/json

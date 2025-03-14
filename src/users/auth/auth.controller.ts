@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
@@ -40,6 +40,30 @@ export class AuthController {
   ) {
     const { access_token, refresh_token, user } =
       await this.authService.login(loginUserDto);
+
+    // Set access token
+    res.setHeader('Authorization', access_token);
+
+    // Set refresh token
+    res.cookie(RF_TOKEN_COOKIE_KEY, refresh_token, {
+      secure: this.configService.get(NODE_ENV) === 'production',
+      httpOnly: true,
+      sameSite: 'none',
+      maxAge: TIME_IN.days[7],
+    });
+
+    res.status(200);
+
+    return user;
+  }
+
+  @Get('google')
+  async google(
+    @Res({ passthrough: true }) res: Response,
+    @Query('idToken') idToken: string,
+  ) {
+    const { access_token, refresh_token, user } =
+      await this.authService.google(idToken);
 
     // Set access token
     res.setHeader('Authorization', access_token);

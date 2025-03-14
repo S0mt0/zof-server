@@ -9,7 +9,7 @@ import * as argon2 from 'argon2';
 import { Model } from 'mongoose';
 
 import { User } from './schema/user.schema';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { UpdateUserDto } from './dto';
 import { CacheService } from 'src/lib/cache/cache.service';
 import {
   JWT_REFRESH_TOKEN_EXP,
@@ -25,7 +25,7 @@ export class UsersService {
     private configService: ConfigService,
   ) {}
 
-  create(dto: CreateUserDto) {
+  create(dto: any) {
     return this.userModel.create(dto);
   }
 

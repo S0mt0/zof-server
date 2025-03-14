@@ -22,6 +22,7 @@ import { ForgotPasswordDto } from './dto';
 import { UsersService } from '../users.service';
 import { CreateUserDto } from '../dto';
 import { CacheService } from 'src/lib/cache/cache.service';
+import { FirebaseAdminService } from './firebase-admin.service';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private cache: CacheService,
+    private readonly firebaseAdminService: FirebaseAdminService,
   ) {}
 
   async signUp(dto: CreateUserDto) {
@@ -85,6 +87,45 @@ export class AuthService {
 
     return { user, access_token, refresh_token };
   }
+
+  google = async (idToken: string) => {
+    if (!idToken) throw new BadRequestException('idToken is required!');
+
+    const user = await this.firebaseAdminService.googleAuth(idToken);
+
+    const access_token = await this.jwtService.signAsync({
+      sub: user._id,
+      email: user.email,
+    });
+
+    const refresh_token = await this.jwtService.signAsync(
+      {
+        sub: user._id,
+        email: user.email,
+      },
+      {
+        secret: this.configService.get(JWT_REFRESH_TOKEN_SECRET),
+        expiresIn: this.configService.get(JWT_REFRESH_TOKEN_EXP),
+      },
+    );
+
+    user.refresh_token = refresh_token;
+    await user.save();
+
+    await this.cache.set(
+      SESSION_USER(user._id.toString()),
+      user.toJSON(),
+      this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
+    );
+
+    await this.cache.set(
+      REFRESH_TOKEN(user._id.toString()),
+      refresh_token,
+      this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
+    );
+
+    return { user, access_token, refresh_token };
+  };
 
   async verifyPRCode(dto: ResetPasswordDTO, jwt: string) {
     const decoded = await this.jwtService.verifyAsync<{
