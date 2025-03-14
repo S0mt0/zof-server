@@ -9,6 +9,7 @@ export class NewPasswordDto {
   @IsString()
   confirm_password: string;
 
+  @IsString()
   @IsStrongPassword({ minLength: 6 }, { message: 'Password not strong enough' })
   new_password: string;
 }

@@ -2,16 +2,10 @@ import {
   IsString,
   IsBoolean,
   MinLength,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-  Validate,
   IsOptional,
   MaxLength,
-  IsDate,
-  IsMongoId,
   IsDateString,
 } from 'class-validator';
-import { Types } from 'mongoose';
 
 export class CreateEventDto {
   @IsString({ message: 'Event title is required.' })
@@ -38,13 +32,8 @@ export class CreateEventDto {
   location: string;
 
   @IsDateString()
-  timestamp: Date;
+  scheduledFor: Date;
 
-  @IsOptional()
-  @IsMongoId()
-  publishedBy?: Types.ObjectId;
-
-  @IsString({ message: 'Please provide a more details.' })
-  @IsOptional()
+  @IsString({ message: 'Please provide more details about the event.' })
   more_details: string;
 }

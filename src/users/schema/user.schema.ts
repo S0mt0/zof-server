@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
-import randomize from 'randomatic';
+import * as randomize from 'randomatic';
 
 import { getRandomAvatarUrl, transformSchema } from 'src/lib/utils';
 
@@ -18,11 +18,7 @@ export type UserDocument = HydratedDocument<User>;
   ]),
 })
 export class User {
-  @Prop({
-    default: function () {
-      return makeUsernameFromEmail(this.email);
-    },
-  })
+  @Prop()
   username: string;
 
   @Prop({
@@ -61,9 +57,7 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (next) {
-  if (this.isModified('password') || this.isNew) {
-    this.password = await argon2.hash(this.password);
-  }
+  if (this.isNew) this.password = await argon2.hash(this.password);
 
   next();
 });
@@ -72,5 +66,5 @@ UserSchema.methods.verifyPassword = async function (password: string) {
   return await argon2.verify(this.password, password);
 };
 
-const makeUsernameFromEmail = (email: string) =>
+export const makeUsernameFromEmail = (email: string) =>
   `${email.split('@')[0]}${randomize('0', 4)}`;

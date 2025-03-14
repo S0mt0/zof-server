@@ -28,7 +28,7 @@ export class CacheService {
     return value ? this.parseIfNeeded<T>(value) : undefined;
   }
 
-  async set<T>(key: string, value: T, ttl?: number): Promise<boolean> {
+  async set<T>(key: string, value: T, ttl?: number | string): Promise<boolean> {
     const stringifiedValue = this.stringifyIfNeeded(value);
     return await this.cache.set(key, stringifiedValue, ttl);
   }

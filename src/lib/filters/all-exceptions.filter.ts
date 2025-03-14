@@ -45,8 +45,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
     if (exception instanceof MongoServerError && exception.code === 11000) {
       errorResponse.statusCode = HttpStatus.CONFLICT;
-      errorResponse.response =
-        'Duplicate key error: A record with this value already exists.';
+      errorResponse.response = 'Unique index: Record exists.';
     }
 
     response.status(errorResponse.statusCode).json(errorResponse);

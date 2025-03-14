@@ -1,10 +1,11 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import randomize from 'randomatic';
+import * as randomize from 'randomatic';
 import { ConfigService } from '@nestjs/config';
 
 import {
@@ -14,6 +15,7 @@ import {
   RP_TOKEN,
   REFRESH_TOKEN,
   TIME_IN,
+  SESSION_USER,
 } from 'src/lib/constants';
 import { LoginUserDto, NewPasswordDto, ResetPasswordDTO } from './dto';
 import { ForgotPasswordDto } from './dto';
@@ -69,10 +71,16 @@ export class AuthService {
     user.refresh_token = refresh_token;
     await user.save();
 
-    await this.cache.set(REFRESH_TOKEN(user._id.toString()), refresh_token);
-    console.log(
-      'rft: ',
-      await this.cache.get(REFRESH_TOKEN(user._id.toString())),
+    await this.cache.set(
+      SESSION_USER(user._id.toString()),
+      user.toJSON(),
+      this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
+    );
+
+    await this.cache.set(
+      REFRESH_TOKEN(user._id.toString()),
+      refresh_token,
+      this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
     );
 
     return { user, access_token, refresh_token };
@@ -84,31 +92,25 @@ export class AuthService {
       email: string;
     }>(jwt);
 
-    const user = await this.usersService.findUserByEmail(decoded.email);
+    const cached_rp_token = await this.cache.get(RP_TOKEN(decoded.email));
 
-    if (!user)
-      throw new ForbiddenException(
-        `User with email, ${decoded.email} doesn't exist!`,
-      );
-
-    const cached = await this.cache.get<string>(RP_TOKEN(user._id.toString()));
-
-    if (!cached) throw new ForbiddenException('That code expired, try again.');
+    if (!cached_rp_token || cached_rp_token !== jwt)
+      throw new ForbiddenException('That code expired, try again.');
 
     if (decoded.code !== dto.rp_code)
       throw new ForbiddenException('Invalid code, try again.');
 
     const token = await this.jwtService.signAsync(
       {
-        email: user.email,
+        email: decoded.email,
       },
       { expiresIn: TIME_IN.minutes[15] },
     );
 
     await this.cache.set(
-      NP_TOKEN(user._id.toString()),
+      NP_TOKEN(decoded.email),
       token,
-      TIME_IN.minutes[15],
+      TIME_IN.minutes[15].toString(),
     );
 
     return token;
@@ -127,12 +129,13 @@ export class AuthService {
         `User with email, ${decoded.email} doesn't exist!`,
       );
 
-    const cached = await this.cache.get<string>(NP_TOKEN(user._id.toString()));
+    const cached_np_token = await this.cache.get<string>(NP_TOKEN(user.email));
 
-    if (!cached) throw new ForbiddenException('That code expired, try again.');
+    if (!cached_np_token)
+      throw new ForbiddenException('That code expired, try again.');
 
     if (dto.new_password !== dto.confirm_password)
-      throw new ForbiddenException('Passwords do not match!');
+      throw new BadRequestException('Passwords do not match!');
 
     user.password = dto.new_password;
     await user.save();
@@ -155,12 +158,10 @@ export class AuthService {
     );
 
     await this.cache.set(
-      RP_TOKEN(user._id.toString()),
+      RP_TOKEN(user.email),
       token,
-      TIME_IN.minutes[15],
+      TIME_IN.minutes[15].toString(),
     );
-
-    console.log(RP_TOKEN, await this.cache.get(RP_TOKEN(user._id.toString())));
 
     return token;
   };

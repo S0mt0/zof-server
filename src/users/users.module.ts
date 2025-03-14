@@ -5,16 +5,18 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { User, UserSchema } from './schema/user.schema';
 import {
   JWT_ACCESS_TOKEN_EXP,
   JWT_ACCESS_TOKEN_SECRET,
 } from 'src/lib/constants';
 import { AuthController } from './auth/auth.controller';
+import { AuthService } from './auth/auth.service';
+import { User, UserSchema } from './schema/user.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>(JWT_ACCESS_TOKEN_SECRET),
@@ -22,11 +24,13 @@ import { AuthController } from './auth/auth.controller';
           expiresIn: configService.get<string>(JWT_ACCESS_TOKEN_EXP),
         },
       }),
+
       inject: [ConfigService],
     }),
   ],
+
   controllers: [UsersController, AuthController],
-  providers: [UsersService, UsersService],
+  providers: [UsersService, AuthService],
   exports: [UsersService],
 })
 export class UsersModule {}

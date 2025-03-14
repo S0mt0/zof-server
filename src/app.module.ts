@@ -12,6 +12,7 @@ import { AppConfigModule } from './lib/config';
 import { ResponseInterceptor } from './lib/interceptors';
 import { EventsService } from './events/events.service';
 import { EventsModule } from './events/events.module';
+import { TeamModule } from './team/team.module';
 
 @Module({
   imports: [
@@ -24,9 +25,11 @@ import { EventsModule } from './events/events.module';
         limit: 100,
       },
     ]),
+    EventsModule,
     BlogsModule,
     UsersModule,
     BlogsModule,
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [

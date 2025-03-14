@@ -16,9 +16,31 @@ GET http://localhost:8000/api/v1/blogs/?limit=4&page=1&fields=-content
 
 ### DELETE request
 DELETE http://localhost:8000/api/v1/blogs/Fullstack-Project-By-Ayomide-hahah-Me
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTQ3NjM3LCJleHAiOjE3NDE5NTEyMzd9.12cB8RZby0YrOtyn99Ly1JZgNcA3nIBVnSMZ8p7k1P8
 
 ### GET request
-GET http://localhost:8000/api/v1/blogs/Become-A-Fullstack-Web-Dev-In-A-Day
+GET http://localhost:8000/api/v1/blogs/Fullstack-Project-By-Ayomide-hahah-Me
+
+### GET request
+GET http://localhost:8000/api/v1/users/me
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTQ3NjM3LCJleHAiOjE3NDE5NTEyMzd9.12cB8RZby0YrOtyn99Ly1JZgNcA3nIBVnSMZ8p7k1P8
+
+### DELETE request
+DELETE  http://localhost:8000/api/v1/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTQ3NjM3LCJleHAiOjE3NDE5NTEyMzd9.12cB8RZby0YrOtyn99Ly1JZgNcA3nIBVnSMZ8p7k1P8
+
+### PATCH request
+PATCH  http://localhost:8000/api/v1/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTQ3NjM3LCJleHAiOjE3NDE5NTEyMzd9.12cB8RZby0YrOtyn99Ly1JZgNcA3nIBVnSMZ8p7k1P8
+Content-Type: application/json
+
+{
+
+    "email": "abbah@gmail.com",
+    "old_password": "Password123!.",
+    "new_password": "Somto!2.",
+    "confirm_password": "Somto!2."
+}
 
 ### PATCH request
 PATCH http://localhost:8000/api/v1/blogs/okay-na
@@ -26,23 +48,79 @@ Content-Type: application/json
 
 {
 
-    "title": "okay na, Somto is the name"
+    "email": "sewkito"
 }
 
 ### POST request
-POST http://localhost:3000/api/v1/events
+POST http://localhost:8000/api/v1/auth/sign-up
 Content-Type: application/json
 
 {
-    "title": "1000 student graduated from our bootcamp training",
-    "desc": "Get onboard with our 1 week long training bootcamp to get started.",
-    "banner": "imageUrl",  
-    "draft": true,
-    "featured":false,
-    "location": "ibadan olunyole",
-    "timestamp": "2024-05-21",
-    "more_details": "1000 student graduated from our bootcamp training"
+    "email": "nkem@gmail.com",
+    "password": "Password123!."
+}
+
+### POST request
+POST http://localhost:8000/api/v1/auth/sign-in
+Content-Type: application/json
+
+{
+    "email": "nkem@gmail.com",
+    "password": "Password123!."
+}
+
+### POST request
+POST http://localhost:8000/api/v1/auth/verify-pr-code
+Content-Type: application/json
+
+{
+    "rp_code": "9126"
+}
+
+### POST request
+POST http://localhost:8000/api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "sewkito@gmail.com"
+}
+
+### POST request
+PUT http://localhost:8000/api/v1/auth/reset-password
+Content-Type: application/json
+
+{
+    "confirm_password": "Sewkito123!.",
+    "new_password": "Sewkito123!."
 }
 
 ### GET request
 GET http://localhost:3000/api/v1/events/1000-student-graduated-from-our-bootcamp-training
+
+### GET request
+GET http://localhost:8000/api/v1/team
+
+### POST request
+POST http://localhost:8000/api/v1/team
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTUzOTcwLCJleHAiOjE3NDE5NTc1NzB9.0sIpiJ03HTVjd6AT19Mi087GPtI3u77WOcfu38b_X-o
+Content-Type: application/json
+
+{
+    "name": "Ezinne Francis",
+    "role": "secretary"
+}
+
+### PATCH request
+PATCH http://localhost:8000/api/v1/team/67d41c9058df3b46b58a57eb
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTUzOTcwLCJleHAiOjE3NDE5NTc1NzB9.0sIpiJ03HTVjd6AT19Mi087GPtI3u77WOcfu38b_X-o
+Content-Type: application/json
+
+{
+    "name": "Somto",
+    "role": "secretary"
+}
+
+### DELETE request
+DELETE http://localhost:8000/api/v1/team/67d41c9058df3b46b58a57eb
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0MDJkMzA4N2UzZGNkYzJiN2UwODYiLCJlbWFpbCI6Im5rZW1AZ21haWwuY29tIiwiaWF0IjoxNzQxOTUzOTcwLCJleHAiOjE3NDE5NTc1NzB9.0sIpiJ03HTVjd6AT19Mi087GPtI3u77WOcfu38b_X-o
+

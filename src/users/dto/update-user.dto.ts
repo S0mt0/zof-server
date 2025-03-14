@@ -26,6 +26,10 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
+  confirm_password?: string;
+
+  @IsString()
+  @IsOptional()
   @IsStrongPassword({ minLength: 6 }, { message: 'Password not strong enough' })
   new_password?: string;
 }

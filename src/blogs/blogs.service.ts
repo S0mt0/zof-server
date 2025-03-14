@@ -9,8 +9,11 @@ import { CreateBlogDto, ParseBlogQueryDto, UpdateBlogDto } from './dto';
 export class BlogsService {
   constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
 
-  create(dto: CreateBlogDto) {
-    return this.blogModel.create(dto);
+  async create(dto: CreateBlogDto, userId: string) {
+    const blog = await this.blogModel.create(dto);
+    blog.publishedBy = userId as any;
+
+    return blog;
   }
 
   async findByBlogId(blogId: string): Promise<Blog | undefined> {

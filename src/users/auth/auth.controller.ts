@@ -10,9 +10,9 @@ import {
   ResetPasswordDTO,
 } from './dto';
 import {
-  JWT_REFRESH_TOKEN_EXP,
   NODE_ENV,
   NP_COOKIE_KEY,
+  RF_TOKEN_COOKIE_KEY,
   RP_COOKIE_KEY,
   TIME_IN,
 } from 'src/lib/constants';
@@ -45,12 +45,14 @@ export class AuthController {
     res.setHeader('Authorization', access_token);
 
     // Set refresh token
-    res.cookie('refresh_token', refresh_token, {
+    res.cookie(RF_TOKEN_COOKIE_KEY, refresh_token, {
       secure: this.configService.get(NODE_ENV) === 'production',
       httpOnly: true,
       sameSite: 'none',
-      maxAge: this.configService.get(JWT_REFRESH_TOKEN_EXP),
+      maxAge: TIME_IN.days[7],
     });
+
+    res.status(200);
 
     return user;
   }
@@ -86,6 +88,8 @@ export class AuthController {
       sameSite: 'none',
       maxAge: TIME_IN.minutes[15],
     });
+
+    res.status(200);
 
     return 'You rock! Now, create a new password.';
   }

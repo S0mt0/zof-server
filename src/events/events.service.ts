@@ -8,41 +8,25 @@ import { Event, syncEventIdWithTitle } from './schema/event.schema';
 export class EventsService {
   constructor(@InjectModel(Event.name) private eventModel: Model<Event>) {}
 
-  create(dto: CreateEventDto) {
-    return this.eventModel.create(dto);
+  async create(dto: CreateEventDto, userId: string) {
+    const event = await this.eventModel.create(dto);
+    event.publishedBy = userId as any;
+
+    return event;
   }
 
   async findByEventId(eventId: string) {
     const event = await this.eventModel.findOne({ eventId });
 
-    if (!event) throw new NotFoundException('Event post not found.');
+    if (!event) throw new NotFoundException('Event not found.');
 
     return event;
   }
 
   async findAll(query: ParseEventQueryDto) {
-    const {
-      title,
-      eventId,
-      sort,
-      fields,
-      draft,
-      location,
-      featured,
-      page,
-      timestamp,
-      limit,
-    } = query;
+    const { sort, fields, draft, featured, page, limit } = query;
 
     const filter: Record<string, any> = {};
-
-    if (title) {
-      filter.title = new RegExp(title, 'i');
-    }
-
-    if (eventId) {
-      filter.eventId = eventId;
-    }
 
     if (draft !== undefined) {
       filter.draft = draft;
@@ -54,10 +38,6 @@ export class EventsService {
 
     if (location) {
       filter.location = location;
-    }
-
-    if (timestamp) {
-      filter.timestamp = timestamp;
     }
 
     const fieldsList = fields ? fields.split(',').join(' ') : '';
@@ -97,7 +77,7 @@ export class EventsService {
       new: true,
     });
 
-    if (!event) throw new NotFoundException('Event post not found.');
+    if (!event) throw new NotFoundException('Event not found.');
 
     return event;
   }

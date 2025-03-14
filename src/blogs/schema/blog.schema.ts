@@ -1,25 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
-import { IEvent } from './event.type';
+import { BlogContent, IBlog } from './blog.type';
 import { transformSchema } from 'src/lib/utils';
 
-export type EventDocument = HydratedDocument<Event>;
+export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema({
   timestamps: true,
   toJSON: transformSchema(['_id']),
 })
-export class Event implements IEvent {
+export class Blog implements IBlog {
   @Prop({
     type: String,
     required: true,
     unique: true,
     default: function () {
-      return syncEventIdWithTitle(this.title);
+      return syncBlogIdWithTitle(this.title);
     },
   })
-  eventId: string;
+  blogId: string;
 
   @Prop({ type: String, required: true, minlength: 5 })
   title: string;
@@ -36,20 +36,31 @@ export class Event implements IEvent {
   @Prop({ type: Boolean, default: true })
   draft: boolean;
 
-  @Prop({ type: String, required: true })
-  location: string;
-
-  @Prop({ type: String, required: true })
-  more_details: string;
-
-  @Prop({ type: Date, required: true })
-  scheduledFor: Date;
-
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   publishedBy: Types.ObjectId;
+
+  @Prop({
+    type: {
+      _id: false,
+      blocks: [
+        {
+          _id: false,
+          type: {
+            type: String,
+            enum: ['paragraph', 'header', 'list', 'image', 'quote'],
+          },
+          data: {
+            style: { type: String, enum: ['unordered', 'ordered'] },
+          },
+        },
+      ],
+    },
+    required: true,
+  })
+  content: BlogContent;
 }
 
-export const EventSchema = SchemaFactory.createForClass(Event);
+export const BlogSchema = SchemaFactory.createForClass(Blog);
 
-export const syncEventIdWithTitle = (title: string) =>
+export const syncBlogIdWithTitle = (title: string) =>
   title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-');

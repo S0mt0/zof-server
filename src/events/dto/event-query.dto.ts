@@ -7,22 +7,19 @@ import {
   Max,
   IsOptional,
   IsIn,
-  IsDate,
-  IsDateString,
 } from 'class-validator';
 
 export class ParseEventQueryDto {
   @IsString()
   @IsOptional()
-  title?: string;
-
-  @IsString()
-  @IsOptional()
-  eventId?: string;
-
-  @IsString()
-  @IsOptional()
-  @IsIn(['createdAt', '-createdAt', 'updatedAt', '-updatedAt']) // Since the only sortable properties of blog is the creation and update time, it only makes sense to restrict the sort parameters to these properties.
+  @IsIn([
+    'createdAt',
+    '-createdAt',
+    'updatedAt',
+    '-updatedAt',
+    'scheduledFor',
+    '-scheduledFor',
+  ])
   @Transform(({ value }) => (value !== undefined ? value : '-createdAt'))
   sort?: string = '-createdAt';
 
@@ -34,14 +31,6 @@ export class ParseEventQueryDto {
   @IsOptional()
   @Transform(({ value }) => (value !== undefined ? value === 'true' : false))
   draft?: boolean;
-
-  @IsString()
-  @IsOptional()
-  location?: string;
-
-  @IsDateString()
-  @IsOptional()
-  timestamp?: Date;
 
   @IsBoolean()
   @IsOptional()
