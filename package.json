@@ -14,7 +14,7 @@
     "db:test:restart": "yarn db:test:rm && yarn db:test:up",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "NODE_OPTIONS='--max-old-space-size=512' nest start",
     "start:dev": "nest start --watch",
     "dev": "yarn start:dev",
     "start:debug": "nest start --debug --watch",
