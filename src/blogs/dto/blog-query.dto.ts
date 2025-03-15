@@ -4,7 +4,6 @@ import {
   IsBoolean,
   IsInt,
   Min,
-  Max,
   IsOptional,
   IsIn,
 } from 'class-validator';
@@ -38,7 +37,6 @@ export class ParseBlogQueryDto {
 
   @IsInt()
   @Min(1, { message: 'Limit must be at least 1' })
-  @Max(10, { message: 'Limit cannot exceed 10' })
   @IsOptional()
   @Transform(({ value }) => (value ? parseInt(value, 10) : 10))
   limit: number = 10;
