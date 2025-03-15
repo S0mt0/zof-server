@@ -11,10 +11,7 @@ export class FirebaseAdminService {
   private app: admin.app.App;
 
   constructor(@Inject() private usersServie: UsersService) {
-    const fbPrivateKeyPath = path.join(
-      process.cwd(),
-      'zof_fb_private_key.json',
-    );
+    const fbPrivateKeyPath = path.join(process.cwd(), 'fb_pk.json');
 
     const serviceAccount = JSON.parse(
       fs.readFileSync(fbPrivateKeyPath, 'utf8'),
