@@ -58,6 +58,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 
 # Firebase admin private key
-# zof_fb_private_key.json
+zof_fb_private_key.json
 .qodo
 .rest-client.http
