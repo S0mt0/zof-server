@@ -22,7 +22,7 @@ import { ForgotPasswordDto } from './dto';
 import { UsersService } from '../users.service';
 import { CreateUserDto } from '../dto';
 import { CacheService } from 'src/lib/cache/cache.service';
-import { FirebaseAdminService } from './firebase-admin.service';
+// import { FirebaseAdminService } from './firebase-admin.service';
 
 @Injectable()
 export class AuthService {
@@ -88,7 +88,7 @@ export class AuthService {
     return { user, access_token, refresh_token };
   }
 
-  google = async (idToken: string) => {
+  /* google = async (idToken: string) => {
     if (!idToken) throw new BadRequestException('idToken is required!');
 
     const user = await this.firebaseAdminService.googleAuth(idToken);
@@ -126,6 +126,7 @@ export class AuthService {
 
     return { user, access_token, refresh_token };
   };
+*/
 
   async verifyPRCode(dto: ResetPasswordDTO, jwt: string) {
     const decoded = await this.jwtService.verifyAsync<{
