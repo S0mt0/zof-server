@@ -31,7 +31,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private cache: CacheService,
-    private readonly firebaseAdminService: FirebaseAdminService,
+    // private readonly firebaseAdminService: FirebaseAdminService,
   ) {}
 
   async signUp(dto: CreateUserDto) {
