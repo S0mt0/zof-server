@@ -12,7 +12,7 @@ import {
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { User, UserSchema } from './schema/user.schema';
-import { FirebaseAdminService } from './auth/firebase-admin.service';
+// import { FirebaseAdminService } from './auth/firebase-admin.service';
 
 @Module({
   imports: [
@@ -31,7 +31,11 @@ import { FirebaseAdminService } from './auth/firebase-admin.service';
   ],
 
   controllers: [UsersController, AuthController],
-  providers: [UsersService, AuthService, FirebaseAdminService],
+  providers: [
+    UsersService,
+    AuthService,
+    // FirebaseAdminService
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}

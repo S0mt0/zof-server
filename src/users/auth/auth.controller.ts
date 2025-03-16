@@ -57,29 +57,29 @@ export class AuthController {
     return user;
   }
 
-  @Get('google')
-  async google(
-    @Res({ passthrough: true }) res: Response,
-    @Query('idToken') idToken: string,
-  ) {
-    const { access_token, refresh_token, user } =
-      await this.authService.google(idToken);
+  // @Get('google')
+  // async google(
+  //   @Res({ passthrough: true }) res: Response,
+  //   @Query('idToken') idToken: string,
+  // ) {
+  //   const { access_token, refresh_token, user } =
+  //     await this.authService.google(idToken);
 
-    // Set access token
-    res.setHeader('Authorization', access_token);
+  //   // Set access token
+  //   res.setHeader('Authorization', access_token);
 
-    // Set refresh token
-    res.cookie(RF_TOKEN_COOKIE_KEY, refresh_token, {
-      secure: this.configService.get(NODE_ENV) === 'production',
-      httpOnly: true,
-      sameSite: 'none',
-      maxAge: TIME_IN.days[7],
-    });
+  //   // Set refresh token
+  //   res.cookie(RF_TOKEN_COOKIE_KEY, refresh_token, {
+  //     secure: this.configService.get(NODE_ENV) === 'production',
+  //     httpOnly: true,
+  //     sameSite: 'none',
+  //     maxAge: TIME_IN.days[7],
+  //   });
 
-    res.status(200);
+  //   res.status(200);
 
-    return user;
-  }
+  //   return user;
+  // }
 
   @Post('forgot-password')
   async forgotPassword(

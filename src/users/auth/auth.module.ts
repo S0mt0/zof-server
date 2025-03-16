@@ -9,7 +9,7 @@ import {
   JWT_ACCESS_TOKEN_SECRET,
 } from 'src/lib/constants';
 import { UsersModule } from '../users.module';
-import { FirebaseAdminService } from './firebase-admin.service';
+// import { FirebaseAdminService } from './firebase-admin.service';
 
 @Module({
   imports: [
@@ -28,7 +28,10 @@ import { FirebaseAdminService } from './firebase-admin.service';
   ],
 
   controllers: [AuthController],
-  providers: [AuthService, FirebaseAdminService],
+  providers: [
+    AuthService,
+    //FirebaseAdminService
+  ],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
