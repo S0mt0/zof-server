@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as randomize from 'randomatic';
@@ -16,6 +17,8 @@ import {
   REFRESH_TOKEN,
   TIME_IN,
   SESSION_USER,
+  ALLOWED_EMAILS,
+  NODE_ENV,
 } from 'src/lib/constants';
 import { LoginUserDto, NewPasswordDto, ResetPasswordDTO } from './dto';
 import { ForgotPasswordDto } from './dto';
@@ -35,6 +38,14 @@ export class AuthService {
   ) {}
 
   async signUp(dto: CreateUserDto) {
+    const allowedEmails = this.configService.get<string>(ALLOWED_EMAILS);
+    const allowedEmailsArray = allowedEmails.split(',');
+    console.log({ allowedEmailsArray });
+
+    if (this.configService.get(NODE_ENV) === 'production')
+      if (!allowedEmailsArray.includes(dto.email))
+        throw new UnauthorizedException('This email is not allowed🚫');
+
     await this.usersService.create(dto);
     return 'Registration complete, please log in.';
   }
@@ -216,4 +227,23 @@ export class AuthService {
 
     return this.forgotPassword({ email: decoded.email });
   };
+
+  refreshToken = async (refresh_token: string) => {
+    const user = await this.usersService.findByRefreshToken(refresh_token);
+
+    if (!user)
+      throw new ForbiddenException('Session expired, please log in again.');
+
+    const token = await this.jwtService.signAsync({
+      sub: user.id,
+      email: user.email,
+    });
+
+    return { user, token };
+  };
+
+  removeSession = (userId: string) => this.usersService.removeSession(userId);
+
+  findByRefreshToken = (token: string) =>
+    this.usersService.findByRefreshToken(token);
 }

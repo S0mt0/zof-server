@@ -4,15 +4,16 @@ import { ConfigService } from '@nestjs/config';
 import { NODE_ENV } from '../constants';
 
 /** Allowed production origins */
-const prodOrigin = ['https://www.zitaonyekafoundation.org', 'https://zitaonyekafoundation.org'];
+const prodOrigin = [
+  'https://www.zitaonyekafoundation.org',
+  'https://zitaonyekafoundation.org',
+];
 
 /** Allowed development origins */
 const devOrigin = [
   'http://localhost:3000',
   'http://localhost:3001',
-  'http://localhost:4173',
-  '[::1]:3000',
-  '[::1]:4173',
+  'http://localhost:5173',
 ];
 
 const config = new ConfigService();

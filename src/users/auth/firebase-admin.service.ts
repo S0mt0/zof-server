@@ -1,16 +1,26 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from 'firebase-admin';
 import * as path from 'path';
 import * as fs from 'fs';
 
 import { UsersService } from '../users.service';
+import { ALLOWED_EMAILS, NODE_ENV } from 'src/lib/constants';
 
 @Injectable()
 export class FirebaseAdminService {
   private app: admin.app.App;
 
-  constructor(@Inject() private usersServie: UsersService) {
+  constructor(
+    @Inject() private usersServie: UsersService,
+    private configService: ConfigService,
+  ) {
     const fbPrivateKeyPath = path.join(process.cwd(), 'fb_pk.json');
 
     const serviceAccount = JSON.parse(
@@ -54,6 +64,13 @@ export class FirebaseAdminService {
       }
     } else {
       // sign up new user using google email, if no user exists already
+      const allowedEmails = this.configService.get<string>(ALLOWED_EMAILS);
+      const allowedEmailsArray = allowedEmails.split(',');
+
+      if (this.configService.get(NODE_ENV) === 'production')
+        if (!allowedEmailsArray.includes(email))
+          throw new UnauthorizedException('This email is not allowed🚫');
+
       if (provider === 'google.com') {
         user = await this.usersServie.create({
           email,

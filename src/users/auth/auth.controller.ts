@@ -1,5 +1,13 @@
-import { Body, Controller, Get, Post, Put, Res } from '@nestjs/common';
-import { Response } from 'express';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 import { AuthService } from './auth.service';
@@ -46,7 +54,8 @@ export class AuthController {
 
     // Set refresh token
     res.cookie(RF_TOKEN_COOKIE_KEY, refresh_token, {
-      secure: this.configService.get(NODE_ENV) === 'production',
+      secure: true,
+      // secure: this.configService.get(NODE_ENV) === 'production',
       httpOnly: true,
       sameSite: 'none',
       maxAge: TIME_IN.days[7],
@@ -141,5 +150,46 @@ export class AuthController {
     });
 
     return 'Code sent!🎉';
+  }
+
+  @Message('Logout successful')
+  @Get('logout')
+  async logout(
+    @Res({ passthrough: true }) res: Response,
+    @ParsedJWTCookie(RF_TOKEN_COOKIE_KEY) refresh_token: string,
+  ) {
+    // Is refresh_token in db?
+    const session = await this.authService.findByRefreshToken(refresh_token);
+
+    if (!session) {
+      // If no valid session was found, clear cookies for whatever session is active
+      res.clearCookie(RF_TOKEN_COOKIE_KEY);
+      res.status(HttpStatus.NO_CONTENT);
+      return 'Session expired, please log in again.';
+    }
+
+    session.refresh_token = '';
+
+    await session.save().then(async (user) => {
+      await this.authService.removeSession(user.id);
+    });
+
+    res.clearCookie(RF_TOKEN_COOKIE_KEY);
+    res.status(HttpStatus.NO_CONTENT);
+  }
+
+  @Get('refresh-token')
+  async refreshToken(
+    @Res({ passthrough: true }) res: Response,
+    @Res() req: Request,
+    @ParsedJWTCookie(RF_TOKEN_COOKIE_KEY) refresh_token: string,
+  ) {
+    const { user, token } = await this.authService.refreshToken(refresh_token);
+
+    // Set access token
+    res.setHeader('Authorization', token);
+    res.status(HttpStatus.OK);
+
+    return user;
   }
 }

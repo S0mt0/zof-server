@@ -6,6 +6,7 @@ class EnvironmentVariables {
   DATABASE_URL: string;
   JWT_ACCESS_TOKEN_SECRET: string;
   JWT_ACCESS_TOKEN_EXP: string;
+  ALLOWED_EMAILS: string;
 }
 
 export function validate(config: Record<string, unknown>) {
