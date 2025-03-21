@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { NODE_ENV } from '../constants';
 
 /** Allowed production origins */
-const prodOrigin = [''];
+const prodOrigin = ['https://www.zitaonyekafoundation.org', 'https://zitaonyekafoundation.org'];
 
 /** Allowed development origins */
 const devOrigin = [
