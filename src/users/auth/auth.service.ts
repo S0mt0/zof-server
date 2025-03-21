@@ -74,13 +74,13 @@ export class AuthService {
     await user.save();
 
     await this.cache.set(
-      SESSION_USER(user._id.toString()),
+      SESSION_USER(user.id),
       user.toJSON(),
       this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
     );
 
     await this.cache.set(
-      REFRESH_TOKEN(user._id.toString()),
+      REFRESH_TOKEN(user.id),
       refresh_token,
       this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
     );
@@ -88,7 +88,7 @@ export class AuthService {
     return { user, access_token, refresh_token };
   }
 
-  google = async (idToken: string) => {
+  async google(idToken: string) {
     if (!idToken) throw new BadRequestException('idToken is required!');
 
     const user = await this.firebaseAdminService.googleAuth(idToken);
@@ -113,19 +113,19 @@ export class AuthService {
     await user.save();
 
     await this.cache.set(
-      SESSION_USER(user._id.toString()),
+      SESSION_USER(user.id),
       user.toJSON(),
       this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
     );
 
     await this.cache.set(
-      REFRESH_TOKEN(user._id.toString()),
+      REFRESH_TOKEN(user.id),
       refresh_token,
       this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
     );
 
     return { user, access_token, refresh_token };
-  };
+  }
 
   async verifyPRCode(dto: ResetPasswordDTO, jwt: string) {
     const decoded = await this.jwtService.verifyAsync<{

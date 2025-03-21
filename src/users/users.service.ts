@@ -13,9 +13,11 @@ import { UpdateUserDto } from './dto';
 import { CacheService } from 'src/lib/cache/cache.service';
 import {
   JWT_REFRESH_TOKEN_EXP,
+  REFRESH_TOKEN,
   SESSION_USER,
   TIME_IN,
 } from 'src/lib/constants';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +25,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     private cache: CacheService,
     private configService: ConfigService,
+    private jwtService: JwtService,
   ) {}
 
   create(dto: any) {
@@ -35,6 +38,17 @@ export class UsersService {
 
   findUserById(id: string) {
     return this.userModel.findById(id).exec();
+  }
+
+  findByRefreshToken(refresh_token: string) {
+    return this.userModel.findOne({ refresh_token }).exec();
+  }
+
+  async refreshToken({ userId, email }: { userId: string; email: string }) {
+    return await this.jwtService.signAsync({
+      sub: userId,
+      email,
+    });
   }
 
   async update(id: string, dto: UpdateUserDto) {
@@ -88,5 +102,9 @@ export class UsersService {
     if (user) await this.cache.delete(SESSION_USER(user._id.toString()));
 
     return 'Account deleted';
+  }
+
+  removeSession(userId: string) {
+    return this.cache.delete(REFRESH_TOKEN(userId));
   }
 }

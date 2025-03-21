@@ -13,19 +13,18 @@ export const ParsedJWTCookie = createParamDecorator(
     const request = ctx.switchToHttp().getRequest<Request>();
     const cookie = request.cookies[key];
 
-    if (!cookie) throw new ForbiddenException('Session expired, try again.');
+    if (!cookie)
+      throw new ForbiddenException('Session expired, please log in again.');
 
     return cookie;
   },
 );
 
 export const MESSAGE_KEY = 'message';
-
 export const Message = (message: string = 'Success') =>
   SetMetadata(MESSAGE_KEY, message);
 
 export const PUBLIC_KEY = 'IS_PUBLIC';
-
 export const Public = () => SetMetadata(PUBLIC_KEY, true);
 
 export const Protect = () => {
