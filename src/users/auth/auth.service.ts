@@ -239,7 +239,7 @@ export class AuthService {
       email: user.email,
     });
 
-    return { user, token };
+    return token;
   };
 
   removeSession = (userId: string) => this.usersService.removeSession(userId);

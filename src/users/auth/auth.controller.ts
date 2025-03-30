@@ -7,7 +7,7 @@ import {
   Put,
   Res,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 import { AuthService } from './auth.service';
@@ -181,15 +181,14 @@ export class AuthController {
   @Get('refresh-token')
   async refreshToken(
     @Res({ passthrough: true }) res: Response,
-    @Res() req: Request,
     @ParsedJWTCookie(RF_TOKEN_COOKIE_KEY) refresh_token: string,
   ) {
-    const { user, token } = await this.authService.refreshToken(refresh_token);
+    const token = await this.authService.refreshToken(refresh_token);
 
     // Set access token
     res.setHeader('Authorization', token);
     res.status(HttpStatus.OK);
 
-    return user;
+    return 'Token refreshed';
   }
 }

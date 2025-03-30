@@ -25,7 +25,7 @@ export class BlogsService {
   }
 
   async findAll(query: ParseBlogQueryDto) {
-    const { sort, fields, draft, featured, page, limit } = query;
+    const { sort, fields, draft, featured, page, limit, title } = query;
 
     const filter: Record<string, any> = {};
 
@@ -35,6 +35,10 @@ export class BlogsService {
 
     if (featured !== undefined) {
       filter.featured = featured;
+    }
+
+    if (title !== undefined || title.trim().length) {
+      filter.title = new RegExp(title, 'i');
     }
 
     const fieldsList = fields ? fields.split(',').join(' ') : '';

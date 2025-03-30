@@ -17,6 +17,10 @@ export class ParseBlogQueryDto {
 
   @IsString()
   @IsOptional()
+  title?: string;
+
+  @IsString()
+  @IsOptional()
   fields?: string;
 
   @IsBoolean()
