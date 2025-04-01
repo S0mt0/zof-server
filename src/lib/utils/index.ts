@@ -1,6 +1,5 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import ShortUniqueId from 'short-unique-id';
 
 import {
   PROFILE_IMGS_COLLECTIONS_LIST,
@@ -59,31 +58,6 @@ export function generateMinutes(): TimeInMilliseconds<Minutes> {
     minutes[i as keyof typeof minutes] = i * 60 * 1000;
   }
   return minutes;
-}
-
-/**
- * Used to generate random positive integers of length, 4 by default, otherwise the passed in length, and expiration time for the code which by default is 15 minutes, otherwise the passed in expiration time.
- * @param length
- * @param exp Code expiration time in `minutes` [15 minutes by default] expressed in milliseconds
- * @returns random code [positive integers] and expiration time
- */
-
-export function getRandomNumbers(length: number = 4, exp: number = 15) {
-  const { randomUUID } = new ShortUniqueId({
-    length,
-    dictionary: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
-  });
-
-  const code = randomUUID();
-  //set code expiration
-  const expiresAt = Date.now() + exp * 60 * 1000; // by default, code expires 15 minutes after it's generated.
-
-  return {
-    /** Random number */
-    code: +code,
-    /** Code expiration time expressed in `milliseconds` */
-    expiresAt,
-  };
 }
 
 /**

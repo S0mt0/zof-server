@@ -8,8 +8,11 @@ import {
   Delete,
   Query,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -47,6 +50,12 @@ export class BlogsController {
     @Body() updateBlogDto: UpdateBlogDto,
   ) {
     return this.blogsService.update(blogId, updateBlogDto);
+  }
+
+  @Post('upload-banner')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
   }
 
   @Delete(':blogId')
