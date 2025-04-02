@@ -1,13 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
+import * as stream from 'stream';
 
 import { Blog, syncBlogIdWithTitle } from './schema/blog.schema';
 import { CreateBlogDto, ParseBlogQueryDto, UpdateBlogDto } from './dto';
+import { cloudinary } from 'src/lib/config';
+import { CLOUDINARY_UPLOAD_PRESET } from 'src/lib/constants';
 
 @Injectable()
 export class BlogsService {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
+  u_preset: string;
+
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<Blog>,
+    private configService: ConfigService,
+  ) {
+    this.u_preset = this.configService.get(CLOUDINARY_UPLOAD_PRESET);
+  }
 
   async create(dto: CreateBlogDto, userId: string) {
     const blog = await this.blogModel.create(dto);
@@ -81,6 +96,66 @@ export class BlogsService {
     if (!blog) throw new NotFoundException('Blog post not found.');
 
     return blog;
+  }
+
+  // async uploadBanner(file: Express.Multer.File) {
+  //   const public_id = `IMG_${Date.now()}`;
+
+  //   // Convert buffer to data URI
+  //   const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+  //   const uploadResponse = await cloudinary.uploader.upload(dataUri, {
+  //     upload_preset: this.u_preset,
+  //     resource_type: 'image',
+  //     public_id,
+  //   });
+
+  //   const bannerUrl = uploadResponse.secure_url;
+  //   return { bannerUrl };
+  // }
+
+  async uploadBanner(file: Express.Multer.File) {
+    const allowedFileTypes = ['image/jpg', 'image/png', 'image/jpeg'];
+    const maxFileSize = 2000000; // 2MB
+
+    if (!allowedFileTypes.includes(file.mimetype))
+      throw new UnprocessableEntityException('File type unsupported');
+
+    if (file.size > maxFileSize)
+      throw new UnprocessableEntityException('File size too large');
+    const public_id = `IMG_${Date.now()}`;
+
+    const uploadStream = new stream.PassThrough();
+    uploadStream.end(file.buffer);
+
+    return new Promise((resolve, reject) => {
+      const upload = cloudinary.uploader.upload_stream(
+        {
+          upload_preset: this.u_preset,
+          resource_type: 'image',
+          public_id,
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve({ bannerUrl: result.secure_url });
+        },
+      );
+
+      uploadStream.pipe(upload);
+    });
+  }
+
+  async deleteFile(url: string) {
+    const parts = url?.split('/');
+    let fileName = '';
+
+    if (parts) fileName = parts[parts?.length - 1].split('.')[0];
+
+    const old_public_id = `${this.u_preset}/${fileName}`;
+    await cloudinary.uploader.destroy(old_public_id, {
+      invalidate: true,
+      resource_type: 'image',
+    });
   }
 
   async delete(blogId: string) {

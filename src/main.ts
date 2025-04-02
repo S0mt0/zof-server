@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
-import { corsOptions } from './lib/config';
+import { cloudinaryConfig, corsOptions } from './lib/config';
 import { PORT } from './lib/constants';
 import { AllExceptionsFilter } from './lib/filters/all-exceptions.filter';
 
@@ -28,6 +28,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors(corsOptions);
 
+  cloudinaryConfig();
   const config = app.get(ConfigService);
 
   await app.listen(config.get(PORT, 5000));

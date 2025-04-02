@@ -4,9 +4,18 @@ import { IsString, validateSync } from 'class-validator';
 class EnvironmentVariables {
   @IsString()
   DATABASE_URL: string;
+
+  ALLOWED_EMAILS: string;
+
+  JWT_REFRESH_TOKEN_SECRET: string;
   JWT_ACCESS_TOKEN_SECRET: string;
   JWT_ACCESS_TOKEN_EXP: string;
-  ALLOWED_EMAILS: string;
+  JWT_REFRESH_TOKEN_EXP: string;
+
+  CLOUDINARY_CLOUD_NAME: string;
+  CLOUDINARY_API_KEY: string;
+  CLOUDINARY_API_SECRET: string;
+  CLOUDINARY_UPLOAD_PRESET: string;
 }
 
 export function validate(config: Record<string, unknown>) {

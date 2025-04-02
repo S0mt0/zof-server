@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   UseInterceptors,
+  Put,
   UploadedFile,
 } from '@nestjs/common';
 import { Request } from 'express';
@@ -52,10 +53,11 @@ export class BlogsController {
     return this.blogsService.update(blogId, updateBlogDto);
   }
 
-  @Post('upload-banner')
+  @Message('Image uploaded🎉')
+  @Put('upload-img')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
+    return this.blogsService.uploadBanner(file);
   }
 
   @Delete(':blogId')
