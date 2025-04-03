@@ -8,6 +8,7 @@ const prodOrigin = [
   'https://www.zitaonyekafoundation.org',
   'https://zitaonyekafoundation.org',
   'https://admin-zofoundation.vercel.app',
+  'https://www.admin-zofoundation.vercel.app',
 ];
 
 /** Allowed development origins */
