@@ -61,8 +61,8 @@ export class BlogsService {
       filter.featured = featured;
     }
 
-    if (title !== undefined || title.trim().length) {
-      filter.title = new RegExp(title, 'i');
+    if (title !== undefined) {
+      if (title.trim().length) filter.title = new RegExp(title, 'i');
     }
 
     const fieldsList = fields ? fields.split(',').join(' ') : '';
