@@ -54,6 +54,7 @@ export class BlogsController {
   }
 
   @Message('Image uploaded🎉')
+  @Public()
   @Put('upload-img')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File) {

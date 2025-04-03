@@ -17,13 +17,17 @@ type TAppErrorResponse = {
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost): void {
+  catch(exception: any, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
+    console.log({ exception });
+
     const errorResponse: TAppErrorResponse = {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      response: 'Something Unexpected happened. Please Try Again.',
+      response:
+        exception?.message ||
+        'Something Unexpected happened. Please Try Again.',
       timestamp: new Date().toISOString(),
     };
 

@@ -9,6 +9,7 @@ export type BlogDocument = HydratedDocument<Blog>;
 @Schema({
   timestamps: true,
   toJSON: transformSchema(['_id']),
+  strict: false,
 })
 export class Blog implements IBlog {
   @Prop({
@@ -21,7 +22,7 @@ export class Blog implements IBlog {
   })
   blogId: string;
 
-  @Prop({ type: String, required: true, minlength: 5 })
+  @Prop({ type: String, required: true, minlength: 5, unique: true })
   title: string;
 
   @Prop({ type: String, required: true })

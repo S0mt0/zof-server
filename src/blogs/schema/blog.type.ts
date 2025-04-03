@@ -7,7 +7,7 @@ interface BlockData {
   text?: string;
   level?: number;
   style?: 'unordered' | 'ordered';
-  items?: string[];
+  items?: any[];
   file?: {
     url: string;
     size?: number;

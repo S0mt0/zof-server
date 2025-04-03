@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -25,8 +26,16 @@ export class BlogsService {
   }
 
   async create(dto: CreateBlogDto, userId: string) {
-    const blog = await this.blogModel.create(dto);
-    blog.publishedBy = userId as any;
+    const blogExists = await this.blogModel.exists({
+      title: new RegExp(dto.title, 'i'),
+    });
+
+    if (blogExists)
+      throw new ConflictException(
+        'Blog with the same title already exists. Choose a different title.',
+      );
+
+    const blog = await this.blogModel.create({ ...dto, publishedBy: userId });
 
     return blog;
   }
@@ -137,7 +146,7 @@ export class BlogsService {
         },
         (error, result) => {
           if (error) return reject(error);
-          resolve({ bannerUrl: result.secure_url });
+          resolve({ url: result.secure_url });
         },
       );
 
