@@ -18,4 +18,7 @@ export class CreateUserDto {
   @IsString()
   @IsStrongPassword({ minLength: 6 }, { message: 'Password not strong enough' })
   password?: string;
+
+  @IsString()
+  confirm_password?: string;
 }

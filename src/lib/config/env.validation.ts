@@ -16,6 +16,9 @@ class EnvironmentVariables {
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
   CLOUDINARY_UPLOAD_PRESET: string;
+
+  GOOGLE_APP_USER: string;
+  GOOGLE_APP_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {

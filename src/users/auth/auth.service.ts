@@ -4,9 +4,12 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  BadGatewayException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as randomize from 'randomatic';
+import * as argon2 from 'argon2';
+
 import { ConfigService } from '@nestjs/config';
 
 import {
@@ -25,7 +28,7 @@ import { ForgotPasswordDto } from './dto';
 import { UsersService } from '../users.service';
 import { CreateUserDto } from '../dto';
 import { CacheService } from 'src/lib/cache/cache.service';
-// import { FirebaseAdminService } from './firebase-admin.service';
+import { MailService } from 'src/lib/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +37,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private cache: CacheService,
-    // private readonly firebaseAdminService: FirebaseAdminService,
+    private readonly mailService: MailService,
   ) {}
 
   async signUp(dto: CreateUserDto) {
@@ -45,6 +48,9 @@ export class AuthService {
     if (this.configService.get(NODE_ENV) === 'production')
       if (!allowedEmailsArray.includes(dto.email))
         throw new UnauthorizedException('This email is not allowed🚫');
+
+    if (dto.password !== dto.confirm_password)
+      throw new BadRequestException('Passwords do not match');
 
     await this.usersService.create(dto);
     return 'Registration complete, please log in.';
@@ -99,46 +105,6 @@ export class AuthService {
     return { user, access_token, refresh_token };
   }
 
-  /* google = async (idToken: string) => {
-    if (!idToken) throw new BadRequestException('idToken is required!');
-
-    const user = await this.firebaseAdminService.googleAuth(idToken);
-
-    const access_token = await this.jwtService.signAsync({
-      sub: user._id,
-      email: user.email,
-    });
-
-    const refresh_token = await this.jwtService.signAsync(
-      {
-        sub: user._id,
-        email: user.email,
-      },
-      {
-        secret: this.configService.get(JWT_REFRESH_TOKEN_SECRET),
-        expiresIn: this.configService.get(JWT_REFRESH_TOKEN_EXP),
-      },
-    );
-
-    user.refresh_token = refresh_token;
-    await user.save();
-
-    await this.cache.set(
-      SESSION_USER(user.id),
-      user.toJSON(),
-      this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
-    );
-
-    await this.cache.set(
-      REFRESH_TOKEN(user.id),
-      refresh_token,
-      this.configService.get(JWT_REFRESH_TOKEN_EXP, TIME_IN.days[7].toString()),
-    );
-
-    return { user, access_token, refresh_token };
-  };
-*/
-
   async verifyPRCode(dto: ResetPasswordDTO, jwt: string) {
     const decoded = await this.jwtService.verifyAsync<{
       code: string;
@@ -190,7 +156,7 @@ export class AuthService {
     if (dto.new_password !== dto.confirm_password)
       throw new BadRequestException('Passwords do not match!');
 
-    user.password = dto.new_password;
+    user.password = await argon2.hash(dto.new_password);
     await user.save();
 
     return 'Voila! Your password has been updated!';
@@ -202,6 +168,27 @@ export class AuthService {
 
     // mail user
     const code = randomize('0', 4);
+    const html = `
+    <p>Use the code to reset your password </br></p>
+    <h2>${code}</h2>
+    <small>This code is valid for only 15 minutes</small>
+    `;
+
+    const text = `Use the code to reset your password: ${code}. This code is valid for only 15 minutes.`;
+
+    const subject = 'Reset Password - ZOF';
+
+    this.mailService
+      .send({
+        to: user.email,
+        subject,
+        html,
+        text,
+      })
+      .catch((e) => {
+        console.log({ e });
+        throw new BadGatewayException('Error sending mail, please try again.');
+      });
 
     const token = await this.jwtService.signAsync(
       { code, email: user.email },

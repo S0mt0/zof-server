@@ -18,7 +18,6 @@ import {
   ResetPasswordDTO,
 } from './dto';
 import {
-  NODE_ENV,
   NP_COOKIE_KEY,
   RF_TOKEN_COOKIE_KEY,
   RP_COOKIE_KEY,
@@ -66,30 +65,6 @@ export class AuthController {
     return user;
   }
 
-  // @Get('google')
-  // async google(
-  //   @Res({ passthrough: true }) res: Response,
-  //   @Query('idToken') idToken: string,
-  // ) {
-  //   const { access_token, refresh_token, user } =
-  //     await this.authService.google(idToken);
-
-  //   // Set access token
-  //   res.setHeader('Authorization', access_token);
-
-  //   // Set refresh token
-  //   res.cookie(RF_TOKEN_COOKIE_KEY, refresh_token, {
-  //     secure: this.configService.get(NODE_ENV) === 'production',
-  //     httpOnly: true,
-  //     sameSite: 'none',
-  //     maxAge: TIME_IN.days[7],
-  //   });
-
-  //   res.status(200);
-
-  //   return user;
-  // }
-
   @Post('forgot-password')
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
@@ -98,7 +73,7 @@ export class AuthController {
     const token = await this.authService.forgotPassword(forgotPasswordDto);
 
     res.cookie(RP_COOKIE_KEY, token, {
-      secure: this.configService.get(NODE_ENV) === 'production',
+      secure: true,
       httpOnly: true,
       sameSite: 'none',
       maxAge: TIME_IN.minutes[15],
@@ -116,7 +91,7 @@ export class AuthController {
     const token = await this.authService.verifyPRCode(resetPasswordDTO, jwt);
 
     res.cookie(NP_COOKIE_KEY, token, {
-      secure: this.configService.get(NODE_ENV) === 'production',
+      secure: true,
       httpOnly: true,
       sameSite: 'none',
       maxAge: TIME_IN.minutes[15],
@@ -143,7 +118,7 @@ export class AuthController {
     const token = await this.authService.resendPRCode(jwt);
 
     res.cookie(RP_COOKIE_KEY, token, {
-      secure: this.configService.get(NODE_ENV) === 'production',
+      secure: true,
       httpOnly: true,
       sameSite: 'none',
       maxAge: TIME_IN.minutes[15],
