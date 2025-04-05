@@ -174,9 +174,9 @@ export class AuthService {
     <small>This code is valid for only 15 minutes</small>
     `;
 
-    const text = `Use the code to reset your password: ${code}. This code is valid for only 15 minutes.`;
+    const text = `Use the code to reset your password: ${code}.`;
 
-    const subject = 'Reset Password - ZOF';
+    const subject = `${code} - Reset Password`;
 
     this.mailService
       .send({

@@ -2,10 +2,42 @@ import {
   IsString,
   IsBoolean,
   MinLength,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  Validate,
   IsOptional,
   MaxLength,
   IsDateString,
 } from 'class-validator';
+
+import { EventContent } from '../schema/event.type';
+
+@ValidatorConstraint({ name: 'IsEventContent', async: false })
+export class IsEventContentConstraint implements ValidatorConstraintInterface {
+  validate(value: EventContent) {
+    if (!value) return false;
+
+    if (typeof value !== 'object') return false;
+
+    if (!Object.keys(value).length) return false;
+
+    if (!Object.keys(value).includes('blocks')) return false;
+
+    if (!Array.isArray(value.blocks)) return false;
+
+    if (!value.blocks.length) return false;
+
+    const hasEmptyBlocks = Boolean(
+      value.blocks.filter((block) => !Object.keys(block).length).length,
+    );
+
+    return !hasEmptyBlocks;
+  }
+
+  defaultMessage(): string {
+    return 'Event content is required.';
+  }
+}
 
 export class CreateEventDto {
   @IsString({ message: 'Event title is required.' })
@@ -18,7 +50,7 @@ export class CreateEventDto {
   desc: string;
 
   @IsString({ message: 'Please provide a cover image.' })
-  banner: string;
+  bannerUrl: string;
 
   @IsBoolean()
   @IsOptional()
@@ -28,12 +60,9 @@ export class CreateEventDto {
   @IsOptional()
   draft: boolean;
 
-  @IsString({ message: 'Please provide a location.' })
-  location: string;
-
   @IsDateString()
   scheduledFor: Date;
 
-  @IsString({ message: 'Please provide more details about the event.' })
-  more_details: string;
+  @Validate(IsEventContentConstraint)
+  content: EventContent;
 }

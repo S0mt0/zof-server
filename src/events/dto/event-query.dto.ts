@@ -11,16 +11,13 @@ import {
 export class ParseEventQueryDto {
   @IsString()
   @IsOptional()
-  @IsIn([
-    'createdAt',
-    '-createdAt',
-    'updatedAt',
-    '-updatedAt',
-    'scheduledFor',
-    '-scheduledFor',
-  ])
+  @IsIn(['createdAt', '-createdAt', 'updatedAt', '-updatedAt']) // Since the only sortable properties of event is the creation and update time, it only makes sense to restrict the sort parameters to these properties.
   @Transform(({ value }) => (value !== undefined ? value : '-createdAt'))
   sort?: string = '-createdAt';
+
+  @IsString()
+  @IsOptional()
+  title?: string;
 
   @IsString()
   @IsOptional()
@@ -28,7 +25,7 @@ export class ParseEventQueryDto {
 
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => (value !== undefined ? value === 'true' : false))
+  @Transform(({ value }) => value === 'true')
   draft?: boolean;
 
   @IsBoolean()

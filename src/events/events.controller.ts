@@ -1,20 +1,25 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
-  Patch,
   Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
   Query,
   Req,
+  UseInterceptors,
+  Put,
+  UploadedFile,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-import { ParseEventQueryDto } from './dto';
-import { Message, Protect, Public } from 'src/lib/decorators';
-import { CreateEventDto, UpdateEventDto } from './dto';
 import { EventsService } from './events.service';
+import { CreateEventDto } from './dto/create-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { Message, Protect, Public } from 'src/lib/decorators';
+import { ParseEventQueryDto } from './dto';
 
 @Protect()
 @Message()
@@ -23,8 +28,8 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
-  create(@Body() createBlogDto: CreateEventDto, @Req() req: Request) {
-    return this.eventsService.create(createBlogDto, req.user['_id']);
+  create(@Body() createEventDto: CreateEventDto, @Req() req: Request) {
+    return this.eventsService.create(createEventDto, req.user['_id']);
   }
 
   @Public()
@@ -35,22 +40,29 @@ export class EventsController {
 
   @Public()
   @Get(':eventId')
-  findByBlogId(@Param('eventId') blogId: string) {
-    return this.eventsService.findByEventId(blogId);
+  findByEventId(@Param('eventId') eventId: string) {
+    return this.eventsService.findByEventId(eventId);
   }
 
   @Message('Event updated')
   @Patch(':eventId')
   update(
-    @Param('eventId') blogId: string,
-    @Body() updateBlogDto: UpdateEventDto,
+    @Param('eventId') eventId: string,
+    @Body() updateEventDto: UpdateEventDto,
   ) {
-    return this.eventsService.update(blogId, updateBlogDto);
+    return this.eventsService.update(eventId, updateEventDto);
   }
 
-  @Message('Event deleted')
+  @Message('Image uploaded🎉')
+  @Public()
+  @Put('upload-img')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.eventsService.uploadBanner(file);
+  }
+
   @Delete(':eventId')
-  delete(@Param('eventId') blogId: string) {
-    return this.eventsService.delete(blogId);
+  delete(@Param('eventId') eventId: string) {
+    return this.eventsService.delete(eventId);
   }
 }

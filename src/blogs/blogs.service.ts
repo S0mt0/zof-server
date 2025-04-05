@@ -93,7 +93,7 @@ export class BlogsService {
     if (dto.title) {
       dto = {
         ...dto,
-        blogId: syncBlogIdWithTitle(dto.title),
+        blogId: syncBlogIdWithTitle(dto.title.trim()),
       } as UpdateBlogDto;
     }
 

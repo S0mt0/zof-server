@@ -106,7 +106,9 @@ export class AuthController {
   async resetPassword(
     @ParsedJWTCookie(RP_COOKIE_KEY) jwt: string,
     @Body() newPasswordDto: NewPasswordDto,
+    @Res({ passthrough: true }) res: Response,
   ) {
+    res.status(200);
     return this.authService.resetPassword(newPasswordDto, jwt);
   }
 
